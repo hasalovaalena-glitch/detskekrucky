@@ -29,6 +29,6 @@ app.use('/api/sklad', skladRoutes);
 app.use('/api/objednavky', objednavkyRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/platby', platbyRoutes);
-app.listen(3000, '127.0.0.1', () => {
+app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server běží na http://127.0.0.1:3000');
 });
