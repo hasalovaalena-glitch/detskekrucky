@@ -40,8 +40,8 @@ router.post('/vytvorit', async (req, res) => {
       line_items,
       mode: 'payment',
       customer_email: o.email,
-      success_url: 'http://localhost:3000/platba-uspesna?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'http://localhost:3000/platba-zrusena',
+      success_url: 'https://detskekrucky1.onrender.com/platba-uspesna?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: 'https://detskekrucky1.onrender.com/platba-zrusena',
       metadata: { objednavka_id: objednavka_id.toString() }
     });
 
