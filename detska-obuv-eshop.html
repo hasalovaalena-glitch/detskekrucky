@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dětské krůčky — Barefoot Obuv</title>
+<title>DÄ›tskĂ© krĹŻÄŤky â€” Barefoot Obuv</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Dancing+Script:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -195,7 +195,7 @@ footer a:hover{color:var(--brown-dark)}
 <body>
 
 <!-- BANNER -->
-<div class="banner">🌿 Doprava zdarma od 800 Kč &nbsp;·&nbsp; <span>Barefoot filozofie</span> &nbsp;·&nbsp; Vrácení do 30 dnů 🌿</div>
+<div style="background:#fff8f0;border-bottom:1px solid #ffd9a0;padding:8px 24px;font-size:0.82rem"><a href="index.html" style="color:#b05e2a;font-weight:700;text-decoration:none">Zpět na web</a></div><div class="banner">đźŚż Doprava zdarma od 800 KÄŤ &nbsp;Â·&nbsp; <span>Barefoot filozofie</span> &nbsp;Â·&nbsp; VrĂˇcenĂ­ do 30 dnĹŻ đźŚż</div>
 
 <!-- HEADER -->
 <header>
@@ -209,12 +209,12 @@ footer a:hover{color:var(--brown-dark)}
 
     <nav class="nav-links">
       <a href="#" class="active" onclick="showView('shop');return false">Obchod</a>
-      <a href="#" onclick="showView('cart');return false">Košík</a>
-      <a href="#" onclick="showView('admin');return false">⚙️ Admin</a>
+      <a href="#" onclick="showView('cart');return false">KoĹˇĂ­k</a>
+      <a href="#" onclick="showView('admin');return false">âš™ď¸Ź Admin</a>
     </nav>
     <div class="nav-actions">
-      <button class="btn-icon" onclick="showView('cart')" title="Košík">
-        🛒
+      <button class="btn-icon" onclick="showView('cart')" title="KoĹˇĂ­k">
+        đź›’
         <span class="cart-badge" id="cartBadge">0</span>
       </button>
     </div>
@@ -226,16 +226,16 @@ footer a:hover{color:var(--brown-dark)}
   <div class="hero">
     <div class="hero-inner">
       <div class="hero-text">
-        <h1>Botičky pro <em>šikovné</em> nožičky</h1>
-        <p>Zdravá a stylová barefoot obuv pro každý věk — od prvních krůčků až po školní výlety. Nechte nožičky růst přirozeně.</p>
+        <h1>BotiÄŤky pro <em>ĹˇikovnĂ©</em> noĹľiÄŤky</h1>
+        <p>ZdravĂˇ a stylovĂˇ barefoot obuv pro kaĹľdĂ˝ vÄ›k â€” od prvnĂ­ch krĹŻÄŤkĹŻ aĹľ po ĹˇkolnĂ­ vĂ˝lety. Nechte noĹľiÄŤky rĹŻst pĹ™irozenÄ›.</p>
         <div class="hero-btns">
-          <button class="btn-primary" onclick="document.querySelector('.products-section').scrollIntoView({behavior:'smooth'})">Prohlédnout kolekci</button>
-          <button class="btn-outline" style="border:2px solid var(--brown)">Poradna velikostí</button>
+          <button class="btn-primary" onclick="document.querySelector('.products-section').scrollIntoView({behavior:'smooth'})">ProhlĂ©dnout kolekci</button>
+          <button class="btn-outline" style="border:2px solid var(--brown)">Poradna velikostĂ­</button>
         </div>
         <div class="hero-stats">
-          <div class="stat"><div class="stat-num">240+</div><div class="stat-label">modelů</div></div>
-          <div class="stat"><div class="stat-num">12k+</div><div class="stat-label">zákazníků</div></div>
-          <div class="stat"><div class="stat-num">4.9⭐</div><div class="stat-label">hodnocení</div></div>
+          <div class="stat"><div class="stat-num">240+</div><div class="stat-label">modelĹŻ</div></div>
+          <div class="stat"><div class="stat-num">12k+</div><div class="stat-label">zĂˇkaznĂ­kĹŻ</div></div>
+          <div class="stat"><div class="stat-num">4.9â­</div><div class="stat-label">hodnocenĂ­</div></div>
         </div>
       </div>
 
@@ -243,23 +243,23 @@ footer a:hover{color:var(--brown-dark)}
   </div>
 
   <div class="filter-section">
-    <div class="filter-title">Procházet kolekci</div>
+    <div class="filter-title">ProchĂˇzet kolekci</div>
     <div class="filter-bar">
-      <button class="filter-chip active" onclick="filterProducts('all',this)">Vše</button>
+      <button class="filter-chip active" onclick="filterProducts('all',this)">VĹˇe</button>
       <button class="filter-chip" onclick="filterProducts('toddler',this)">Batolata</button>
       <button class="filter-chip" onclick="filterProducts('boys',this)">Kluci</button>
       <button class="filter-chip" onclick="filterProducts('girls',this)">Holky</button>
       <button class="filter-chip" onclick="filterProducts('sport',this)">Sport</button>
       <button class="filter-chip" onclick="filterProducts('winter',this)">Zima</button>
       <div class="search-box">
-        <span style="color:var(--tan)">🔍</span>
+        <span style="color:var(--tan)">đź”Ť</span>
         <input type="text" placeholder="Hledat boty..." oninput="searchProducts(this.value)">
       </div>
     </div>
   </div>
 
   <div class="products-section">
-    <div class="section-label">Naše kolekce</div>
+    <div class="section-label">NaĹˇe kolekce</div>
     <div class="section-heading">Barefoot boty <span style="font-size:1rem;font-family:'Lato',sans-serif;color:var(--text-light);font-weight:300" id="productCount"></span></div>
     <div class="section-divider"></div>
     <div class="product-grid" id="productGrid"></div>
@@ -269,7 +269,7 @@ footer a:hover{color:var(--brown-dark)}
 <!-- DETAIL -->
 <div id="view-detail" class="view">
   <div style="max-width:1100px;margin:0 auto;padding:28px 32px 0">
-    <button class="back-btn" onclick="showView('shop')">← Zpět do obchodu</button>
+    <button class="back-btn" onclick="showView('shop')">â† ZpÄ›t do obchodu</button>
   </div>
   <div class="detail-wrap" id="detailContent"></div>
 </div>
@@ -277,7 +277,7 @@ footer a:hover{color:var(--brown-dark)}
 <!-- CART -->
 <div id="view-cart" class="view">
   <div class="cart-wrap">
-    <div class="cart-title">Váš košík 🛒</div>
+    <div class="cart-title">VĂˇĹˇ koĹˇĂ­k đź›’</div>
     <div id="cartContent"></div>
   </div>
 </div>
@@ -286,20 +286,20 @@ footer a:hover{color:var(--brown-dark)}
 <div id="view-admin" class="view">
   <div class="admin-layout">
     <aside class="sidebar">
-      <div class="sidebar-item active" onclick="adminTab('dashboard',this)"><span class="si">📊</span> Přehled</div>
-      <div class="sidebar-item" onclick="adminTab('products',this)"><span class="si">👟</span> Produkty</div>
-      <div class="sidebar-item" onclick="adminTab('orders',this)"><span class="si">📦</span> Objednávky</div>
-      <div class="sidebar-item" onclick="adminTab('customers',this)"><span class="si">👥</span> Zákazníci</div>
-      <div class="sidebar-item" onclick="adminTab('settings',this)"><span class="si">⚙️</span> Nastavení</div>
+      <div class="sidebar-item active" onclick="adminTab('dashboard',this)"><span class="si">đź“Š</span> PĹ™ehled</div>
+      <div class="sidebar-item" onclick="adminTab('products',this)"><span class="si">đź‘ź</span> Produkty</div>
+      <div class="sidebar-item" onclick="adminTab('orders',this)"><span class="si">đź“¦</span> ObjednĂˇvky</div>
+      <div class="sidebar-item" onclick="adminTab('customers',this)"><span class="si">đź‘Ą</span> ZĂˇkaznĂ­ci</div>
+      <div class="sidebar-item" onclick="adminTab('settings',this)"><span class="si">âš™ď¸Ź</span> NastavenĂ­</div>
     </aside>
     <main class="admin-content" id="adminContent"></main>
   </div>
 </div>
 
 <footer>
-  <span class="fname">Dětské krůčky</span>
-  <a href="tel:773517733">📞 773 517 733</a>
-  <a href="mailto:masaze.hasalova@gmail.com">✉️ masaze.hasalova@gmail.com</a>
+  <span class="fname">DÄ›tskĂ© krĹŻÄŤky</span>
+  <a href="tel:773517733">đź“ž 773 517 733</a>
+  <a href="mailto:monikaskarpichova@gmail.com">âś‰ď¸Ź monikaskarpichova@gmail.com</a> | <a href="obchodni-podminky.html">Obchodni podminky</a> | <a href="reklamacni-rad.html">Reklamacni rad</a>
 </footer>
 <div class="toast" id="toast"></div>
 
@@ -323,7 +323,7 @@ async function nacistProdukty() {
           id: item.id,
           name: item.nazev,
           brand: item.znacka,
-          emoji: item.emoji || '👟',
+          emoji: item.emoji || 'đź‘ź',
           category: item.kategorie,
           price: item.cena,
           sizes: [],
@@ -374,7 +374,7 @@ function getFiltered(){
 
 function renderProducts(){
   const list = getFiltered();
-  document.getElementById('productCount').textContent = `(${list.length} produktů)`;
+  document.getElementById('productCount').textContent = `(${list.length} produktĹŻ)`;
   document.getElementById('productGrid').innerHTML = list.map(p=>`
     <div class="product-card" onclick="showDetail(${p.id})">
       <div class="product-img">
@@ -384,13 +384,13 @@ function renderProducts(){
       <div class="product-info">
         <div class="product-brand">${p.brand}</div>
         <div class="product-name">${p.name}</div>
-        <div class="product-sizes">Velikosti: ${p.sizes[0]}–${p.sizes[p.sizes.length-1]}</div>
+        <div class="product-sizes">Velikosti: ${p.sizes[0]}â€“${p.sizes[p.sizes.length-1]}</div>
         <div class="product-bottom">
           <div>
-            ${p.oldPrice?`<span class="price-old">${p.oldPrice} Kč</span>`:''}
-            <span class="product-price">${p.price} Kč</span>
+            ${p.oldPrice?`<span class="price-old">${p.oldPrice} KÄŤ</span>`:''}
+            <span class="product-price">${p.price} KÄŤ</span>
           </div>
-          <button class="btn-add" onclick="event.stopPropagation();quickAdd(${p.id})" title="Přidat do košíku">+</button>
+          <button class="btn-add" onclick="event.stopPropagation();quickAdd(${p.id})" title="PĹ™idat do koĹˇĂ­ku">+</button>
         </div>
       </div>
     </div>
@@ -406,23 +406,23 @@ function showDetail(id){
     <div>
       <div class="detail-brand">${p.brand}</div>
       <div class="detail-name">${p.name}</div>
-      ${p.oldPrice?`<div class="detail-price-old">${p.oldPrice} Kč</div>`:''}
-      <div class="detail-price">${p.price} Kč</div>
-      <div class="detail-desc">${p.desc || 'Kvalitní barefoot obuv pro zdravý vývoj dětských nožiček.'}</div>
+      ${p.oldPrice?`<div class="detail-price-old">${p.oldPrice} KÄŤ</div>`:''}
+      <div class="detail-price">${p.price} KÄŤ</div>
+      <div class="detail-desc">${p.desc || 'KvalitnĂ­ barefoot obuv pro zdravĂ˝ vĂ˝voj dÄ›tskĂ˝ch noĹľiÄŤek.'}</div>
       <div class="size-label">Vyber velikost</div>
       <div class="sizes">${p.sizes.map(s=>`<button class="size-btn${p.unavailable.includes(s)?' unavailable':''}" onclick="selectSize(${s},this)" ${p.unavailable.includes(s)?'disabled':''}>${s}</button>`).join('')}</div>
       <div class="detail-actions">
-        <button class="btn-primary btn-add-large" onclick="addToCart(${p.id})">Přidat do košíku</button>
-        <button class="btn-outline" style="padding:14px 18px;font-size:18px" title="Uložit">🤍</button>
+        <button class="btn-primary btn-add-large" onclick="addToCart(${p.id})">PĹ™idat do koĹˇĂ­ku</button>
+        <button class="btn-outline" style="padding:14px 18px;font-size:18px" title="UloĹľit">đź¤Ť</button>
       </div>
       <div class="detail-features">
-        <div class="feature"><span>🚚</span> Doprava zdarma od 800 Kč</div>
-        <div class="feature"><span>↩️</span> Vrácení do 30 dnů</div>
-        <div class="feature"><span>💳</span> Platba kartou</div>
+        <div class="feature"><span>đźšš</span> Doprava zdarma od 800 KÄŤ</div>
+        <div class="feature"><span>â†©ď¸Ź</span> VrĂˇcenĂ­ do 30 dnĹŻ</div>
+        <div class="feature"><span>đź’ł</span> Platba kartou</div>
       </div>
       <div style="margin-top:24px;padding:16px 20px;background:var(--cream);border-radius:12px;font-size:0.85rem;color:var(--text-light);display:flex;flex-direction:column;gap:6px;border:1px solid var(--tan-light)">
-        <div>📞 <a href="tel:773517733" style="color:var(--brown);font-weight:700;text-decoration:none">773 517 733</a></div>
-        <div>✉️ <a href="mailto:masaze.hasalova@gmail.com" style="color:var(--brown);font-weight:700;text-decoration:none">masaze.hasalova@gmail.com</a></div>
+        <div>đź“ž <a href="tel:773517733" style="color:var(--brown);font-weight:700;text-decoration:none">773 517 733</a></div>
+        <div>âś‰ď¸Ź <a href="mailto:monikaskarpichova@gmail.com" style="color:var(--brown);font-weight:700;text-decoration:none">monikaskarpichova@gmail.com</a> | <a href="obchodni-podminky.html">Obchodni podminky</a> | <a href="reklamacni-rad.html">Reklamacni rad</a></div>
       </div>
     </div>
   `;
@@ -436,24 +436,24 @@ function selectSize(s, el){
 }
 
 function addToCart(id){
-  if(!selectedSize){showToast('⚠️ Vyber nejprve velikost!');return;}
+  if(!selectedSize){showToast('âš ď¸Ź Vyber nejprve velikost!');return;}
   const p = products.find(x=>x.id===id);
   const existing = cart.find(x=>x.id===id&&x.size===selectedSize);
   if(existing) existing.qty++;
   else cart.push({id,size:selectedSize,qty:1,name:p.name,brand:p.brand,emoji:p.emoji,price:p.price});
   updateCartBadge();
-  showToast(`✅ ${p.name} (vel. ${selectedSize}) přidáno do košíku`);
+  showToast(`âś… ${p.name} (vel. ${selectedSize}) pĹ™idĂˇno do koĹˇĂ­ku`);
 }
 
 function quickAdd(id){
   const p = products.find(x=>x.id===id);
   const s = p.sizes.find(x=>!p.unavailable.includes(x));
-  if(!s){showToast('⚠️ Produkt není skladem');return;}
+  if(!s){showToast('âš ď¸Ź Produkt nenĂ­ skladem');return;}
   const existing = cart.find(x=>x.id===id&&x.size===s);
   if(existing) existing.qty++;
   else cart.push({id,size:s,qty:1,name:p.name,brand:p.brand,emoji:p.emoji,price:p.price});
   updateCartBadge();
-  showToast(`✅ ${p.name} přidáno (vel. ${s})`);
+  showToast(`âś… ${p.name} pĹ™idĂˇno (vel. ${s})`);
 }
 
 function updateCartBadge(){
@@ -464,7 +464,7 @@ function updateCartBadge(){
 function renderCart(){
   const el = document.getElementById('cartContent');
   if(!cart.length){
-    el.innerHTML=`<div class="cart-empty"><div>🛒</div><h3>Košík je prázdný</h3><p style="margin-bottom:24px;font-weight:300">Žádné boty ještě nevybráno.</p><button class="btn-primary" onclick="showView('shop')">Přejít do obchodu</button></div>`;
+    el.innerHTML=`<div class="cart-empty"><div>đź›’</div><h3>KoĹˇĂ­k je prĂˇzdnĂ˝</h3><p style="margin-bottom:24px;font-weight:300">Ĺ˝ĂˇdnĂ© boty jeĹˇtÄ› nevybrĂˇno.</p><button class="btn-primary" onclick="showView('shop')">PĹ™ejĂ­t do obchodu</button></div>`;
     return;
   }
   const total = cart.reduce((a,x)=>a+x.price*x.qty,0);
@@ -474,24 +474,24 @@ function renderCart(){
       <div class="cart-item-img">${item.emoji}</div>
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-detail">${item.brand} · Velikost ${item.size}</div>
+        <div class="cart-item-detail">${item.brand} Â· Velikost ${item.size}</div>
         <div class="qty">
-          <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+          <button class="qty-btn" onclick="changeQty(${i},-1)">â’</button>
           <span class="qty-num">${item.qty}</span>
           <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-        <div class="cart-item-price">${item.price*item.qty} Kč</div>
-        <button class="remove-btn" onclick="removeItem(${i})">🗑️</button>
+        <div class="cart-item-price">${item.price*item.qty} KÄŤ</div>
+        <button class="remove-btn" onclick="removeItem(${i})">đź—‘ď¸Ź</button>
       </div>
     </div>
   `).join('')+`
   <div class="cart-summary">
-    <div class="cart-row"><span>Mezisoučet</span><span>${total} Kč</span></div>
-    <div class="cart-row"><span>Doprava</span><span>${shipping===0?'<span style="color:var(--sage-dark)">Zdarma</span>':shipping+' Kč'}</span></div>
-    <div class="cart-row total"><span>Celkem</span><span>${total+shipping} Kč</span></div>
-    <button class="btn-primary" style="width:100%;padding:14px;font-size:0.9rem;margin-top:20px;border-radius:12px" onclick="checkout()">Pokračovat k objednávce →</button>
+    <div class="cart-row"><span>MezisouÄŤet</span><span>${total} KÄŤ</span></div>
+    <div class="cart-row"><span>Doprava</span><span>${shipping===0?'<span style="color:var(--sage-dark)">Zdarma</span>':shipping+' KÄŤ'}</span></div>
+    <div class="cart-row total"><span>Celkem</span><span>${total+shipping} KÄŤ</span></div>
+    <button class="btn-primary" style="width:100%;padding:14px;font-size:0.9rem;margin-top:20px;border-radius:12px" onclick="checkout()">PokraÄŤovat k objednĂˇvce â†’</button>
   </div>`;
 }
 
@@ -510,28 +510,28 @@ function removeItem(i){
 
 async function checkout() {
   if (!cart.length) return;
-  const jmeno = prompt('Vaše jméno:');
+  const jmeno = prompt('VaĹˇe jmĂ©no:');
   if (!jmeno) return;
-  const email = prompt('Váš e-mail:');
+  const email = prompt('VĂˇĹˇ e-mail:');
   if (!email) return;
   const telefon = prompt('Telefon:');
-  const ulice = prompt('Ulice a číslo popisné:');
-  const mesto = prompt('Město:');
-  const psc = prompt('PSČ:');
-  showToast('⏳ Vytvářím objednávku...');
+  const ulice = prompt('Ulice a ÄŤĂ­slo popisnĂ©:');
+  const mesto = prompt('MÄ›sto:');
+  const psc = prompt('PSÄŚ:');
+  showToast('âŹł VytvĂˇĹ™Ă­m objednĂˇvku...');
   try {
     const objednavkaRes = await fetch(`${API}/objednavky`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         jmeno, email, telefon, ulice, mesto, psc,
-        doprava: 'Zásilkovna',
+        doprava: 'ZĂˇsilkovna',
         platba: 'karta',
         polozky: cart.map(x => ({ produkt_id: x.id, velikost: x.size, pocet: x.qty, cena: x.price }))
       })
     });
     const objednavka = await objednavkaRes.json();
-    if (objednavka.chyba) { showToast('❌ ' + objednavka.chyba); return; }
+    if (objednavka.chyba) { showToast('âťŚ ' + objednavka.chyba); return; }
     const platbaRes = await fetch(`${API}/platby/vytvorit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -540,7 +540,7 @@ async function checkout() {
     const platba = await platbaRes.json();
     if (platba.url) { cart = []; updateCartBadge(); window.location.href = platba.url; }
   } catch (err) {
-    showToast('❌ Chyba: ' + err.message);
+    showToast('âťŚ Chyba: ' + err.message);
   }
 }
 
@@ -553,12 +553,12 @@ function showToast(msg){
 
 // ADMIN
 const ordersData = [
-  {id:'#1042',customer:'Jana Nováková',product:'Zimní sněhule',total:'1890 Kč',status:'paid',date:'4.6.2026'},
-  {id:'#1041',customer:'Tomáš Procházka',product:'Sportovní tenisky',total:'1590 Kč',status:'shipped',date:'3.6.2026'},
-  {id:'#1040',customer:'Monika Kratochvílová',product:'Balerínky s mašlí',total:'990 Kč',status:'pending',date:'3.6.2026'},
-  {id:'#1039',customer:'Petr Blaha',product:'Fotbalové kopačky',total:'1490 Kč',status:'paid',date:'2.6.2026'},
+  {id:'#1042',customer:'Jana NovĂˇkovĂˇ',product:'ZimnĂ­ snÄ›hule',total:'1890 KÄŤ',status:'paid',date:'4.6.2026'},
+  {id:'#1041',customer:'TomĂˇĹˇ ProchĂˇzka',product:'SportovnĂ­ tenisky',total:'1590 KÄŤ',status:'shipped',date:'3.6.2026'},
+  {id:'#1040',customer:'Monika KratochvĂ­lovĂˇ',product:'BalerĂ­nky s maĹˇlĂ­',total:'990 KÄŤ',status:'pending',date:'3.6.2026'},
+  {id:'#1039',customer:'Petr Blaha',product:'FotbalovĂ© kopaÄŤky',total:'1490 KÄŤ',status:'paid',date:'2.6.2026'},
 ];
-const statusLabel = {paid:'Zaplaceno',pending:'Čeká',shipped:'Odesláno',cancelled:'Zrušeno'};
+const statusLabel = {paid:'Zaplaceno',pending:'ÄŚekĂˇ',shipped:'OdeslĂˇno',cancelled:'ZruĹˇeno'};
 
 function adminTab(tab, el){
   document.querySelectorAll('.sidebar-item').forEach(x=>x.classList.remove('active'));
@@ -570,63 +570,63 @@ function renderAdmin(tab){
   const el = document.getElementById('adminContent');
   if(tab==='dashboard'){
     el.innerHTML=`
-      <div class="admin-header"><div class="admin-title">Přehled</div><button class="btn-primary" style="font-size:0.8rem;padding:10px 20px">+ Nový produkt</button></div>
+      <div class="admin-header"><div class="admin-title">PĹ™ehled</div><button class="btn-primary" style="font-size:0.8rem;padding:10px 20px">+ NovĂ˝ produkt</button></div>
       <div class="metrics">
-        <div class="metric"><div class="metric-label">Tržby tento měsíc</div><div class="metric-value">47 280 Kč</div><div class="metric-change up">▲ +12% vs minulý měsíc</div></div>
-        <div class="metric"><div class="metric-label">Objednávky</div><div class="metric-value">38</div><div class="metric-change up">▲ +5 tento týden</div></div>
-        <div class="metric"><div class="metric-label">Zákazníci</div><div class="metric-value">214</div><div class="metric-change up">▲ +18 nových</div></div>
-        <div class="metric"><div class="metric-label">Produkty</div><div class="metric-value">12</div><div class="metric-change down">▼ 3 nízký stav</div></div>
+        <div class="metric"><div class="metric-label">TrĹľby tento mÄ›sĂ­c</div><div class="metric-value">47 280 KÄŤ</div><div class="metric-change up">â–˛ +12% vs minulĂ˝ mÄ›sĂ­c</div></div>
+        <div class="metric"><div class="metric-label">ObjednĂˇvky</div><div class="metric-value">38</div><div class="metric-change up">â–˛ +5 tento tĂ˝den</div></div>
+        <div class="metric"><div class="metric-label">ZĂˇkaznĂ­ci</div><div class="metric-value">214</div><div class="metric-change up">â–˛ +18 novĂ˝ch</div></div>
+        <div class="metric"><div class="metric-label">Produkty</div><div class="metric-value">12</div><div class="metric-change down">â–Ľ 3 nĂ­zkĂ˝ stav</div></div>
       </div>
       <div class="admin-table">
-        <div class="table-header"><span>Poslední objednávky</span><a href="#" style="font-size:0.8rem;color:var(--brown);text-decoration:none;font-weight:700" onclick="adminTab('orders',document.querySelectorAll('.sidebar-item')[2]);return false">Zobrazit vše →</a></div>
-        <table><thead><tr><th>ID</th><th>Zákazník</th><th>Produkt</th><th>Celkem</th><th>Stav</th><th>Datum</th></tr></thead>
+        <div class="table-header"><span>PoslednĂ­ objednĂˇvky</span><a href="#" style="font-size:0.8rem;color:var(--brown);text-decoration:none;font-weight:700" onclick="adminTab('orders',document.querySelectorAll('.sidebar-item')[2]);return false">Zobrazit vĹˇe â†’</a></div>
+        <table><thead><tr><th>ID</th><th>ZĂˇkaznĂ­k</th><th>Produkt</th><th>Celkem</th><th>Stav</th><th>Datum</th></tr></thead>
         <tbody>${ordersData.slice(0,4).map(o=>`<tr><td style="font-weight:700;color:var(--brown)">${o.id}</td><td>${o.customer}</td><td>${o.product}</td><td style="font-weight:700">${o.total}</td><td><span class="status-badge s-${o.status}">${statusLabel[o.status]}</span></td><td style="color:var(--text-light)">${o.date}</td></tr>`).join('')}</tbody></table>
       </div>`;
   } else if(tab==='products'){
     el.innerHTML=`
-      <div class="admin-header"><div class="admin-title">Produkty</div><button class="btn-primary" style="font-size:0.8rem;padding:10px 20px">+ Přidat produkt</button></div>
+      <div class="admin-header"><div class="admin-title">Produkty</div><button class="btn-primary" style="font-size:0.8rem;padding:10px 20px">+ PĹ™idat produkt</button></div>
       <div class="admin-table">
         <table><thead><tr><th>Produkt</th><th>Kategorie</th><th>Cena</th><th>Sklad</th><th>Akce</th></tr></thead>
         <tbody>${products.map(p=>`<tr>
           <td><div style="display:flex;align-items:center;gap:10px"><div class="admin-product-img">${p.emoji}</div><div><div style="font-weight:700">${p.name}</div><div style="font-size:0.75rem;color:var(--text-light)">${p.brand}</div></div></div></td>
           <td style="text-transform:capitalize;color:var(--text-light)">${p.category}</td>
-          <td style="font-weight:700;color:var(--brown)">${p.price} Kč</td>
-          <td><span class="status-badge ${p.unavailable.length?'s-pending':'s-paid'}">${p.unavailable.length?'Omezeno':'Dostupné'}</span></td>
+          <td style="font-weight:700;color:var(--brown)">${p.price} KÄŤ</td>
+          <td><span class="status-badge ${p.unavailable.length?'s-pending':'s-paid'}">${p.unavailable.length?'Omezeno':'DostupnĂ©'}</span></td>
           <td><button class="btn-outline" style="padding:6px 14px;font-size:0.75rem">Upravit</button></td>
         </tr>`).join('')}</tbody></table>
       </div>`;
   } else if(tab==='orders'){
     fetch(`${API}/objednavky`).then(r=>r.json()).then(data=>{
       el.innerHTML=`
-        <div class="admin-header"><div class="admin-title">Objednávky</div></div>
+        <div class="admin-header"><div class="admin-title">ObjednĂˇvky</div></div>
         <div class="admin-table">
-          <table><thead><tr><th>ID</th><th>Zákazník</th><th>Celkem</th><th>Stav</th><th>Datum</th><th>Akce</th></tr></thead>
+          <table><thead><tr><th>ID</th><th>ZĂˇkaznĂ­k</th><th>Celkem</th><th>Stav</th><th>Datum</th><th>Akce</th></tr></thead>
           <tbody>${data.map(o=>`<tr>
             <td style="font-weight:700;color:var(--brown)">#${o.id}</td>
             <td>${o.jmeno}<br><span style="font-size:0.75rem;color:var(--text-light)">${o.email}</span></td>
-            <td style="font-weight:700">${o.celkem} Kč</td>
+            <td style="font-weight:700">${o.celkem} KÄŤ</td>
             <td><span class="status-badge s-${o.stav==='nova'?'pending':o.stav==='zaplacena'?'paid':o.stav==='odeslana'?'shipped':'cancelled'}">${o.stav}</span></td>
             <td style="color:var(--text-light)">${new Date(o.vytvoreno).toLocaleDateString('cs-CZ')}</td>
             <td><button class="btn-outline" style="padding:6px 14px;font-size:0.75rem">Detail</button></td>
           </tr>`).join('')}</tbody></table>
         </div>`;
-    }).catch(()=>{el.innerHTML='<p style="padding:20px;color:var(--text-light)">Nelze načíst objednávky.</p>'});
+    }).catch(()=>{el.innerHTML='<p style="padding:20px;color:var(--text-light)">Nelze naÄŤĂ­st objednĂˇvky.</p>'});
   } else if(tab==='customers'){
     el.innerHTML=`
-      <div class="admin-header"><div class="admin-title">Zákazníci</div></div>
+      <div class="admin-header"><div class="admin-title">ZĂˇkaznĂ­ci</div></div>
       <div class="admin-table">
-        <table><thead><tr><th>Jméno</th><th>Objednávky</th><th>Celkem utratil</th><th>Registrace</th></tr></thead>
-        <tbody>${['Jana Nováková','Tomáš Procházka','Monika Kratochvílová','Petr Blaha'].map(c=>`<tr><td style="font-weight:700">${c}</td><td>${Math.floor(Math.random()*8)+1}</td><td>${(Math.floor(Math.random()*15)+5)*390} Kč</td><td style="color:var(--text-light)">${Math.floor(Math.random()*12)+1}.${Math.floor(Math.random()*6)+1}.2025</td></tr>`).join('')}</tbody></table>
+        <table><thead><tr><th>JmĂ©no</th><th>ObjednĂˇvky</th><th>Celkem utratil</th><th>Registrace</th></tr></thead>
+        <tbody>${['Jana NovĂˇkovĂˇ','TomĂˇĹˇ ProchĂˇzka','Monika KratochvĂ­lovĂˇ','Petr Blaha'].map(c=>`<tr><td style="font-weight:700">${c}</td><td>${Math.floor(Math.random()*8)+1}</td><td>${(Math.floor(Math.random()*15)+5)*390} KÄŤ</td><td style="color:var(--text-light)">${Math.floor(Math.random()*12)+1}.${Math.floor(Math.random()*6)+1}.2025</td></tr>`).join('')}</tbody></table>
       </div>`;
   } else if(tab==='settings'){
     el.innerHTML=`
-      <div class="admin-header"><div class="admin-title">Nastavení</div></div>
+      <div class="admin-header"><div class="admin-title">NastavenĂ­</div></div>
       <div style="background:var(--warm-white);border-radius:var(--radius);border:1.5px solid var(--tan-light);padding:28px;max-width:500px">
-        <div style="margin-bottom:20px"><label style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light)">Název obchodu</label><input type="text" value="Dětské krůčky" style="width:100%;padding:10px 14px;border:1.5px solid var(--tan-light);border-radius:10px;font-size:0.9rem;font-family:'Lato',sans-serif;outline:none;color:var(--text)"></div>
-        <div style="margin-bottom:20px"><label style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light)">E-mail</label><input type="email" value="masaze.hasalova@gmail.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--tan-light);border-radius:10px;font-size:0.9rem;font-family:'Lato',sans-serif;outline:none;color:var(--text)"></div>
-        <div style="margin-bottom:20px"><label style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light)">Měna</label><select style="width:100%;padding:10px 14px;border:1.5px solid var(--tan-light);border-radius:10px;font-size:0.9rem;font-family:'Lato',sans-serif;outline:none;color:var(--text)"><option>CZK (Kč)</option><option>EUR (€)</option></select></div>
-        <div style="margin-bottom:24px"><label style="display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:600;cursor:pointer;color:var(--text)"><input type="checkbox" checked> Zasílat notifikace o objednávkách</label></div>
-        <button class="btn-primary" style="padding:12px 28px">Uložit nastavení</button>
+        <div style="margin-bottom:20px"><label style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light)">NĂˇzev obchodu</label><input type="text" value="DÄ›tskĂ© krĹŻÄŤky" style="width:100%;padding:10px 14px;border:1.5px solid var(--tan-light);border-radius:10px;font-size:0.9rem;font-family:'Lato',sans-serif;outline:none;color:var(--text)"></div>
+        <div style="margin-bottom:20px"><label style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light)">E-mail</label><input type="email" value="monikaskarpichova@gmail.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--tan-light);border-radius:10px;font-size:0.9rem;font-family:'Lato',sans-serif;outline:none;color:var(--text)"></div>
+        <div style="margin-bottom:20px"><label style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light)">MÄ›na</label><select style="width:100%;padding:10px 14px;border:1.5px solid var(--tan-light);border-radius:10px;font-size:0.9rem;font-family:'Lato',sans-serif;outline:none;color:var(--text)"><option>CZK (KÄŤ)</option><option>EUR (â‚¬)</option></select></div>
+        <div style="margin-bottom:24px"><label style="display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:600;cursor:pointer;color:var(--text)"><input type="checkbox" checked> ZasĂ­lat notifikace o objednĂˇvkĂˇch</label></div>
+        <button class="btn-primary" style="padding:12px 28px">UloĹľit nastavenĂ­</button>
       </div>`;
   }
 }
@@ -635,4 +635,10 @@ nacistProdukty();
 </script>
 </body>
 </html>
+
+
+
+
+
+
 
