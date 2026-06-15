@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const pool = require('../db/pool');
 const bcrypt = require('bcrypt');
@@ -83,4 +83,15 @@ router.get('/moje-objednavky', async (req, res) => {
   }
 });
 
+// Všichni zákazníci (admin)
+router.get('/zakaznici', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, jmeno, email, telefon, ulice, mesto, psc, vytvoreno FROM zakaznici ORDER BY vytvoreno DESC');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ chyba: err.message });
+  }
+});
+
 module.exports = router;
+
