@@ -222,7 +222,8 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
     </div>
     <div class="nav-section">
       <div class="nav-label">Finance</div>
-      <div class="nav-item" onclick="showPage('ucetnictvi',this)"><span class="icon">💰</span> Účetnictví</div>
+      <div class="nav-item" onclick="showPage('kategorie',this)"><span class="icon">🏷️</span> Kategorie</div>
+    <div class="nav-item" onclick="showPage('ucetnictvi',this)"><span class="icon">💰</span> Účetnictví</div>
     </div>
     <div class="sidebar-footer">
       <button class="logout-btn" onclick="logout()">🚪 Odhlásit se</button>
@@ -354,6 +355,19 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
       </div>
     </div>
 
+    
+    <!-- KATEGORIE -->
+    <div class="page" id="page-kategorie">
+      <div class="page-header">
+        <div class="page-title">🏷️ Kategorie</div>
+        <button class="btn btn-primary" onclick="openModal('modalNovaKategorie')">+ Nová kategorie</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Seznam kategorií</h3><button class="refresh-btn" onclick="loadKategorie()">↻ Obnovit</button></div>
+        <div id="kategorieTable"><div class="loading">Načítám...</div></div>
+      </div>
+    </div>
+
     <!-- ÚČETNICTVÍ -->
     <div class="page" id="page-ucetnictvi">
       <div class="page-header">
@@ -379,6 +393,22 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
       </div>
     </div>
 
+  </div>
+</div>
+
+
+<!-- MODAL NOVÁ KATEGORIE -->
+<div class="modal-overlay" id="modalNovaKategorie">
+  <div class="modal" style="max-width:420px">
+    <h3>🏷️ Nová kategorie</h3>
+    <div id="kategorieMsg"></div>
+    <div class="form-group"><label>Název (česky) *</label><input type="text" id="kNazev" placeholder="Například: Dívky"></div>
+    <div class="form-group"><label>Slug (anglicky, bez mezer) *</label><input type="text" id="kSlug" placeholder="Například: girls"></div>
+    <div class="form-group"><label>Pořadí</label><input type="number" id="kPoradi" placeholder="6" value="6"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalNovaKategorie')">Zrušit</button>
+      <button class="btn btn-primary" onclick="ulozitKategorii()">💾 Uložit</button>
+    </div>
   </div>
 </div>
 
@@ -513,6 +543,7 @@ function showPage(name, el) {
   if (name==='sklad') { loadSklad(); loadPohyby(); }
   if (name==='produkty') loadProdukty();
   if (name==='ucetnictvi') loadUcetnictvi();
+  if (name==='kategorie') loadKategorie();
   // Close mobile sidebar
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -977,6 +1008,53 @@ async function exportCSV(typ) {
     a.href=url; a.download=`detskekrucky-${nazev}-${new Date().toISOString().slice(0,10)}.csv`;
     a.click(); URL.revokeObjectURL(url);
   } catch(e) { alert('Chyba při exportu'); }
+}
+
+
+// KATEGORIE
+async function loadKategorie() {
+  document.getElementById('kategorieTable').innerHTML = '<div class="loading">Načítám...</div>';
+  try {
+    const data = await fetch(API+'/kategorie').then(r=>r.json());
+    if (!data.length) { document.getElementById('kategorieTable').innerHTML = '<div class="empty">Žádné kategorie</div>'; return; }
+    document.getElementById('kategorieTable').innerHTML = `
+      <table><thead><tr><th>ID</th><th>Název</th><th>Slug</th><th>Pořadí</th><th>Akce</th></tr></thead>
+      <tbody>${data.map(k=>`<tr>
+        <td>${k.id}</td>
+        <td><strong>${k.nazev}</strong></td>
+        <td><code style="background:var(--cream);padding:2px 6px;border-radius:4px">${k.slug}</code></td>
+        <td>${k.poradi}</td>
+        <td><button class="btn btn-red btn-sm" onclick="smazatKategorii(${k.id},'${k.nazev}')">🗑️ Smazat</button></td>
+      </tr>`).join('')}</tbody></table>`;
+  } catch(e) { document.getElementById('kategorieTable').innerHTML = '<div class="error-msg">Chyba načítání</div>'; }
+}
+
+async function ulozitKategorii() {
+  const nazev = document.getElementById('kNazev').value.trim();
+  const slug = document.getElementById('kSlug').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const poradi = document.getElementById('kPoradi').value || 0;
+  if (!nazev || !slug) { document.getElementById('kategorieMsg').innerHTML = '<div class="error-msg">Vyplňte název a slug.</div>'; return; }
+  try {
+    const res = await fetch(API+'/kategorie', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({nazev, slug, poradi: parseInt(poradi)})
+    });
+    if (res.ok) {
+      document.getElementById('kategorieMsg').innerHTML = '<div class="success-msg">✅ Kategorie uložena!</div>';
+      setTimeout(() => { closeModal('modalNovaKategorie'); loadKategorie(); }, 1500);
+    } else {
+      const err = await res.json();
+      document.getElementById('kategorieMsg').innerHTML = `<div class="error-msg">${err.chyba||'Chyba'}</div>`;
+    }
+  } catch(e) { document.getElementById('kategorieMsg').innerHTML = '<div class="error-msg">Chyba spojení</div>'; }
+}
+
+async function smazatKategorii(id, nazev) {
+  if (!confirm(`Opravdu smazat kategorii "${nazev}"?`)) return;
+  try {
+    await fetch(API+'/kategorie/'+id, {method:'DELETE'});
+    loadKategorie();
+  } catch(e) { alert('Chyba'); }
 }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
