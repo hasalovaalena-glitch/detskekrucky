@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const pool = require('./db/pool');
 const skladRoutes = require('./routes/sklad');
@@ -13,7 +13,7 @@ const path = require('path');
 app.use(express.static(path.join(__dirname)));
 
 app.get('/', (req, res) => {
-  res.json({ zprava: 'Dětské krůčky API funguje!' });
+  res.json({ zprava: 'DÄ›tskĂ© krĹŻÄŤky API funguje!' });
 });
 
 app.get('/test-db', async (req, res) => {
@@ -29,7 +29,9 @@ app.use('/api/sklad', skladRoutes);
 app.use('/api/objednavky', objednavkyRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/platby', platbyRoutes);
+app.use('/api/kategorie', skladRoutes);
 app.use('/api/produkty', skladRoutes);
 app.listen> {
-  console.log('Server běží na http://127.0.0.1:3000');
+  console.log('Server bÄ›ĹľĂ­ na http://127.0.0.1:3000');
 });
+
