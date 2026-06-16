@@ -156,6 +156,14 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
 .pill.active{background:var(--brown);color:#fff;border-color:var(--brown)}
 .pill:hover:not(.active){border-color:var(--brown);color:var(--brown)}
 
+/* PRODEJNA MODAL */
+.polozka-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px}
+@media(max-width:600px){
+  .polozka-grid{grid-template-columns:1fr 1fr;gap:6px}
+  .polozka-grid .form-group:first-child{grid-column:1/-1}
+}
+.modal-overlay .modal{max-height:95vh}
+
 /* PRINT */
 @media print{
   .sidebar,.topbar,.no-print{display:none!important}
@@ -423,12 +431,12 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
 
 <!-- MODAL PRODEJ V PRODEJNĚ -->
 <div class="modal-overlay" id="modalProdejnaProdat">
-  <div class="modal" style="max-width:520px">
+  <div class="modal" style="max-width:720px;width:100%">
     <h3>🏪 Nový prodej v prodejně</h3>
     <div id="prodejnaMsg"></div>
     <div class="section-divider">Položky prodeje</div>
     <div id="prodejnaPolozky">
-      <div class="polozka-row" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px">
+      <div class="polozka-row polozka-grid">
         <div class="form-group" style="margin:0"><label>Produkt</label><select class="prod-select" onchange="nacistVelikostiProdejna(this)"><option value="">Vyberte...</option></select></div>
         <div class="form-group" style="margin:0"><label>Velikost</label><select class="vel-select"><option value="">-</option></select></div>
         <div class="form-group" style="margin:0"><label>Ks</label><input type="number" class="pocet-input" value="1" min="1"></div>
@@ -1142,6 +1150,7 @@ function pridatPolozku() {
   const div = document.createElement('div');
   div.className = 'polozka-row';
   div.style = 'display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px';
+  div.classList.add('polozka-grid');
   div.innerHTML = `
     <div class="form-group" style="margin:0"><label>Produkt</label><select class="prod-select" onchange="nacistVelikostiProdejna(this)">
       <option value="">Vyberte produkt...</option>
@@ -1220,7 +1229,7 @@ async function ulozitProdejnaProdat() {
   document.getElementById('prodejnaPoznamka').value = '';
   document.getElementById('prodejnaMsg').innerHTML = '';
   document.getElementById('prodejnaPolozky').innerHTML = `
-    <div class="polozka-row" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px">
+    <div class="polozka-row polozka-grid">
       <div class="form-group" style="margin:0"><label>Produkt</label><select class="prod-select" onchange="nacistVelikostiProdejna(this)"><option value="">Vyberte...</option></select></div>
       <div class="form-group" style="margin:0"><label>Velikost</label><select class="vel-select"><option value="">-</option></select></div>
       <div class="form-group" style="margin:0"><label>Ks</label><input type="number" class="pocet-input" value="1" min="1"></div>
