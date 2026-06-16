@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const pool = require('../db/pool');
 
@@ -91,4 +91,33 @@ router.get('/nizky-stav', async (req, res) => {
   }
 });
 
+
+// Přidat nový produkt
+router.post('/produkty', async (req, res) => {
+  const { nazev, znacka, emoji, popis, kategorie, cena, cena_puvodni } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO produkty (nazev, znacka, emoji, popis, kategorie, cena, cena_puvodni) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *',
+      [nazev, znacka, emoji||'', popis||'', kategorie, cena, cena_puvodni||null]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ chyba: err.message });
+  }
+});
+
+// Upravit produkt
+router.patch('/produkty/:id', async (req, res) => {
+  const { nazev, znacka, cena, cena_puvodni } = req.body;
+  try {
+    const result = await pool.query(
+      'UPDATE produkty SET nazev=$1, znacka=$2, cena=$3, cena_puvodni=$4 WHERE id=$5 RETURNING *',
+      [nazev, znacka, cena, cena_puvodni||null, req.params.id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ chyba: err.message });
+  }
+});
 module.exports = router;
+
