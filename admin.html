@@ -222,7 +222,8 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
     </div>
     <div class="nav-section">
       <div class="nav-label">Finance</div>
-      <div class="nav-item" onclick="showPage('kategorie',this)"><span class="icon">🏷️</span> Kategorie</div>
+      <div class="nav-item" onclick="showPage('prodejna',this)"><span class="icon">🏪</span> Prodejna</div>
+    <div class="nav-item" onclick="showPage('kategorie',this)"><span class="icon">🏷️</span> Kategorie</div>
     <div class="nav-item" onclick="showPage('ucetnictvi',this)"><span class="icon">💰</span> Účetnictví</div>
     </div>
     <div class="sidebar-footer">
@@ -356,6 +357,28 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
     </div>
 
     
+    
+    <!-- PRODEJNA -->
+    <div class="page" id="page-prodejna">
+      <div class="page-header">
+        <div class="page-title">🏪 Prodejna</div>
+        <div class="table-actions">
+          <button class="btn btn-primary" onclick="openModal('modalProdejnaProdat')">+ Nový prodej</button>
+          <button class="btn btn-csv no-print" onclick="exportCSV('prodejna')">⬇ CSV</button>
+          <button class="refresh-btn" onclick="loadProdejna()">↻ Obnovit</button>
+        </div>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="stat-label">Tržby prodejna celkem</div><div class="stat-value" id="prodejnaTrzby">...</div></div>
+        <div class="stat-card"><div class="stat-label">Počet prodejů</div><div class="stat-value" id="prodejnaPocet">...</div></div>
+        <div class="stat-card"><div class="stat-label">Dnes</div><div class="stat-value" id="prodejnaDnes">...</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>📋 Historie prodejů v prodejně</h3></div>
+        <div id="prodejnaTable"><div class="loading">Načítám...</div></div>
+      </div>
+    </div>
+
     <!-- KATEGORIE -->
     <div class="page" id="page-kategorie">
       <div class="page-header">
@@ -396,6 +419,46 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
   </div>
 </div>
 
+
+
+<!-- MODAL PRODEJ V PRODEJNĚ -->
+<div class="modal-overlay" id="modalProdejnaProdat">
+  <div class="modal" style="max-width:520px">
+    <h3>🏪 Nový prodej v prodejně</h3>
+    <div id="prodejnaMsg"></div>
+    <div class="section-divider">Položky prodeje</div>
+    <div id="prodejnaPolozky">
+      <div class="polozka-row" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px">
+        <div class="form-group" style="margin:0"><label>Produkt</label><select class="prod-select" onchange="nacistVelikostiProdejna(this)"><option value="">Vyberte...</option></select></div>
+        <div class="form-group" style="margin:0"><label>Velikost</label><select class="vel-select"><option value="">-</option></select></div>
+        <div class="form-group" style="margin:0"><label>Ks</label><input type="number" class="pocet-input" value="1" min="1"></div>
+        <div class="form-group" style="margin:0"><label>Cena Kč</label><input type="number" class="cena-input" placeholder="0"></div>
+        <button class="btn btn-red btn-sm" style="margin-bottom:0;align-self:end" onclick="this.closest('.polozka-row').remove();prepocitatCelkem()">✕</button>
+      </div>
+    </div>
+    <button class="btn btn-outline" style="width:100%;margin-bottom:16px" onclick="pridatPolozku()">+ Přidat položku</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;background:var(--cream);padding:12px 16px;border-radius:10px;margin-bottom:16px">
+      <strong>Celkem:</strong>
+      <strong style="font-size:1.3rem;color:var(--brown)" id="prodejnaCelkem">0 Kč</strong>
+    </div>
+    <div class="section-divider">Platba a zákazník</div>
+    <div class="form-grid-2">
+      <div class="form-group"><label>Způsob platby</label>
+        <select id="prodejnaPlatba">
+          <option value="hotovost">💵 Hotovost</option>
+          <option value="karta">💳 Karta</option>
+          <option value="qr">📱 QR platba</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Jméno zákazníka (volitelné)</label><input type="text" id="prodejnaZakaznik" placeholder="Jana Nováková"></div>
+    </div>
+    <div class="form-group"><label>Poznámka</label><input type="text" id="prodejnaPoznamka" placeholder="Volitelná poznámka..."></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalProdejnaProdat')">Zrušit</button>
+      <button class="btn btn-primary" onclick="ulozitProdejnaProdat()">💾 Uložit a vytisknout účtenku</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL NOVÁ KATEGORIE -->
 <div class="modal-overlay" id="modalNovaKategorie">
@@ -544,6 +607,7 @@ function showPage(name, el) {
   if (name==='produkty') loadProdukty();
   if (name==='ucetnictvi') loadUcetnictvi();
   if (name==='kategorie') loadKategorie();
+  if (name==='prodejna') { loadProdejna(); nacistSkladProProdejna(); }
   // Close mobile sidebar
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -951,7 +1015,9 @@ async function loadUcetnictvi() {
     const data = await fetch(API+'/objednavky').then(r=>r.json());
     const obj = Array.isArray(data) ? data.filter(o=>o.stav!=='zruseno') : [];
     const trzby = obj.reduce((s,o)=>s+o.celkem,0);
-    document.getElementById('ucetTrzby').textContent = trzby.toLocaleString('cs-CZ')+' Kč';
+    const prodejnaTrzbyUcet = prodejnaData.reduce((s,p)=>s+p.celkem,0);
+    const celkoveTrzby = trzby + prodejnaTrzbyUcet;
+    document.getElementById('ucetTrzby').textContent = celkoveTrzby.toLocaleString('cs-CZ')+' Kč';
     document.getElementById('ucetPrumer').textContent = obj.length ? Math.round(trzby/obj.length).toLocaleString('cs-CZ')+' Kč' : '—';
     document.getElementById('ucetPocet').textContent = obj.length;
     const mn = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
@@ -1010,6 +1076,221 @@ async function exportCSV(typ) {
   } catch(e) { alert('Chyba při exportu'); }
 }
 
+
+
+// PRODEJNA
+let prodejnaData = JSON.parse(localStorage.getItem('prodejnaData') || '[]');
+let prodejnaSkladData = [];
+
+async function loadProdejna() {
+  // Load stats
+  const dnes = new Date().toLocaleDateString('cs-CZ');
+  const trzby = prodejnaData.reduce((s,p)=>s+p.celkem,0);
+  const dnesTrzby = prodejnaData.filter(p=>new Date(p.datum).toLocaleDateString('cs-CZ')===dnes).reduce((s,p)=>s+p.celkem,0);
+  document.getElementById('prodejnaTrzby').textContent = trzby.toLocaleString('cs-CZ')+' Kč';
+  document.getElementById('prodejnaPocet').textContent = prodejnaData.length;
+  document.getElementById('prodejnaDnes').textContent = dnesTrzby.toLocaleString('cs-CZ')+' Kč';
+
+  if (!prodejnaData.length) {
+    document.getElementById('prodejnaTable').innerHTML = '<div class="empty">Zatím žádné prodeje v prodejně</div>';
+    return;
+  }
+  document.getElementById('prodejnaTable').innerHTML = `
+    <table><thead><tr><th>Č.</th><th>Datum</th><th>Zákazník</th><th>Položky</th><th>Celkem</th><th>Platba</th><th>Akce</th></tr></thead>
+    <tbody>${[...prodejnaData].reverse().map((p,i)=>`<tr>
+      <td><strong>#${prodejnaData.length-i}</strong></td>
+      <td>${new Date(p.datum).toLocaleDateString('cs-CZ')}<br><small>${new Date(p.datum).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'})}</small></td>
+      <td>${p.zakaznik||'—'}</td>
+      <td>${p.polozky.map(x=>`${x.nazev} vel.${x.velikost} x${x.pocet}`).join(', ')}</td>
+      <td><strong>${p.celkem.toLocaleString('cs-CZ')} Kč</strong></td>
+      <td>${p.platba==='hotovost'?'💵 Hotovost':p.platba==='karta'?'💳 Karta':'📱 QR'}</td>
+      <td style="display:flex;gap:4px">
+        <button class="btn btn-print btn-sm" onclick="tiskUctenky(${prodejnaData.length-1-i})">🖨️ Účtenka</button>
+        <button class="btn btn-red btn-sm" onclick="smazatProdej(${prodejnaData.length-1-i})">✕</button>
+      </td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function nacistSkladProProdejna() {
+  try {
+    const data = await fetch(API+'/sklad').then(r=>r.json());
+    prodejnaSkladData = Array.isArray(data) ? data : [];
+    // Naplnit selecty produktů
+    const produkty = {};
+    prodejnaSkladData.forEach(s=>{if(!produkty[s.id])produkty[s.id]={nazev:s.nazev,cena:s.cena};});
+    document.querySelectorAll('.prod-select').forEach(sel=>{
+      sel.innerHTML = '<option value="">Vyberte produkt...</option>' +
+        Object.entries(produkty).map(([id,p])=>`<option value="${id}" data-cena="${p.cena}">${p.nazev}</option>`).join('');
+    });
+  } catch(e) {}
+}
+
+function nacistVelikostiProdejna(sel) {
+  const produktId = sel.value;
+  const velSel = sel.closest('.polozka-row').querySelector('.vel-select');
+  const cenaSel = sel.closest('.polozka-row').querySelector('.cena-input');
+  const cena = sel.options[sel.selectedIndex]?.dataset.cena || 0;
+  cenaSel.value = cena;
+  const velikosti = prodejnaSkladData.filter(s=>s.id==produktId&&s.pocet_kusu>0);
+  velSel.innerHTML = '<option value="">Vel...</option>' + velikosti.map(v=>`<option value="${v.velikost}">${v.velikost} (${v.pocet_kusu}ks)</option>`).join('');
+  prepocitatCelkem();
+}
+
+function pridatPolozku() {
+  const produkty = {};
+  prodejnaSkladData.forEach(s=>{if(!produkty[s.id])produkty[s.id]={nazev:s.nazev,cena:s.cena};});
+  const div = document.createElement('div');
+  div.className = 'polozka-row';
+  div.style = 'display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px';
+  div.innerHTML = `
+    <div class="form-group" style="margin:0"><label>Produkt</label><select class="prod-select" onchange="nacistVelikostiProdejna(this)">
+      <option value="">Vyberte produkt...</option>
+      ${Object.entries(produkty).map(([id,p])=>`<option value="${id}" data-cena="${p.cena}">${p.nazev}</option>`).join('')}
+    </select></div>
+    <div class="form-group" style="margin:0"><label>Velikost</label><select class="vel-select"><option value="">-</option></select></div>
+    <div class="form-group" style="margin:0"><label>Ks</label><input type="number" class="pocet-input" value="1" min="1" oninput="prepocitatCelkem()"></div>
+    <div class="form-group" style="margin:0"><label>Cena Kč</label><input type="number" class="cena-input" placeholder="0" oninput="prepocitatCelkem()"></div>
+    <button class="btn btn-red btn-sm" style="align-self:end" onclick="this.closest('.polozka-row').remove();prepocitatCelkem()">✕</button>`;
+  document.getElementById('prodejnaPolozky').appendChild(div);
+}
+
+function prepocitatCelkem() {
+  let total = 0;
+  document.querySelectorAll('.polozka-row').forEach(row=>{
+    const pocet = parseInt(row.querySelector('.pocet-input')?.value)||0;
+    const cena = parseInt(row.querySelector('.cena-input')?.value)||0;
+    total += pocet * cena;
+  });
+  document.getElementById('prodejnaCelkem').textContent = total.toLocaleString('cs-CZ')+' Kč';
+}
+
+async function ulozitProdejnaProdat() {
+  const polozky = [];
+  let celkem = 0;
+  let ok = true;
+
+  document.querySelectorAll('.polozka-row').forEach(row=>{
+    const prodSel = row.querySelector('.prod-select');
+    const velSel = row.querySelector('.vel-select');
+    const pocet = parseInt(row.querySelector('.pocet-input')?.value)||0;
+    const cena = parseInt(row.querySelector('.cena-input')?.value)||0;
+    if (!prodSel.value || !velSel.value || pocet<=0) { ok=false; return; }
+    const nazev = prodSel.options[prodSel.selectedIndex]?.text || '';
+    polozky.push({produkt_id:parseInt(prodSel.value), nazev, velikost:parseInt(velSel.value), pocet, cena});
+    celkem += pocet * cena;
+  });
+
+  if (!ok || !polozky.length) {
+    document.getElementById('prodejnaMsg').innerHTML = '<div class="error-msg">Vyplňte všechny položky.</div>';
+    return;
+  }
+
+  const prodej = {
+    datum: new Date().toISOString(),
+    zakaznik: document.getElementById('prodejnaZakaznik').value,
+    platba: document.getElementById('prodejnaPlatba').value,
+    poznamka: document.getElementById('prodejnaPoznamka').value,
+    polozky, celkem
+  };
+
+  // Odečíst ze skladu
+  try {
+    for (const p of polozky) {
+      await fetch(API+'/sklad/odecist', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({produkt_id:p.produkt_id, velikost:p.velikost, pocet:p.pocet, poznamka:'Prodej v prodejně'})
+      });
+    }
+  } catch(e) { console.error('Chyba odečtení skladu'); }
+
+  // Uložit lokálně
+  prodejnaData.push(prodej);
+  localStorage.setItem('prodejnaData', JSON.stringify(prodejnaData));
+
+  // Vytisknout účtenku
+  const cislo = prodejnaData.length;
+  tiskUctenkyData(prodej, cislo);
+
+  closeModal('modalProdejnaProdat');
+  loadProdejna();
+  loadPrehled();
+
+  // Reset formuláře
+  document.getElementById('prodejnaZakaznik').value = '';
+  document.getElementById('prodejnaPoznamka').value = '';
+  document.getElementById('prodejnaMsg').innerHTML = '';
+  document.getElementById('prodejnaPolozky').innerHTML = `
+    <div class="polozka-row" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px">
+      <div class="form-group" style="margin:0"><label>Produkt</label><select class="prod-select" onchange="nacistVelikostiProdejna(this)"><option value="">Vyberte...</option></select></div>
+      <div class="form-group" style="margin:0"><label>Velikost</label><select class="vel-select"><option value="">-</option></select></div>
+      <div class="form-group" style="margin:0"><label>Ks</label><input type="number" class="pocet-input" value="1" min="1"></div>
+      <div class="form-group" style="margin:0"><label>Cena Kč</label><input type="number" class="cena-input" placeholder="0"></div>
+      <button class="btn btn-red btn-sm" style="align-self:end" onclick="this.closest('.polozka-row').remove();prepocitatCelkem()">✕</button>
+    </div>`;
+  nacistSkladProProdejna();
+}
+
+function tiskUctenky(idx) {
+  const prodej = [...prodejnaData].reverse()[idx];
+  const cislo = prodejnaData.length - idx;
+  tiskUctenkyData(prodej, cislo);
+}
+
+function tiskUctenkyData(prodej, cislo) {
+  const pw = window.open('','_blank','width=400,height=600');
+  const datum = new Date(prodej.datum);
+  pw.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Účtenka #${cislo}</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:20px;max-width:320px;margin:0 auto;font-size:13px}
+    .center{text-align:center}
+    .logo{font-size:1.4rem;font-weight:bold;color:#8B4513}
+    .divider{border-top:1px dashed #ccc;margin:10px 0}
+    .row{display:flex;justify-content:space-between;margin:4px 0}
+    .total{font-size:1.1rem;font-weight:bold;border-top:2px solid #333;padding-top:8px;margin-top:8px}
+    .footer{text-align:center;font-size:11px;color:#999;margin-top:16px}
+    @media print{body{padding:0}}
+  </style>
+  </head><body>
+  <div class="center">
+    <div class="logo">Dětské krůčky</div>
+    <div style="font-size:11px;color:#999">Barefoot obuv</div>
+    <div style="font-size:11px">Monika Škarpichová | IČO: 24354635</div>
+    <div style="font-size:11px">Holešovská 752, Hulín 768 24</div>
+  </div>
+  <div class="divider"></div>
+  <div class="row"><span><strong>Účtenka č.:</strong></span><span>#${String(cislo).padStart(4,'0')}</span></div>
+  <div class="row"><span><strong>Datum:</strong></span><span>${datum.toLocaleDateString('cs-CZ')}</span></div>
+  <div class="row"><span><strong>Čas:</strong></span><span>${datum.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'})}</span></div>
+  ${prodej.zakaznik?`<div class="row"><span><strong>Zákazník:</strong></span><span>${prodej.zakaznik}</span></div>`:''}
+  <div class="divider"></div>
+  <div><strong>Položky:</strong></div>
+  ${prodej.polozky.map(p=>`
+    <div style="margin:6px 0">
+      <div>${p.nazev} — vel. ${p.velikost}</div>
+      <div class="row"><span>${p.pocet} ks × ${p.cena.toLocaleString('cs-CZ')} Kč</span><span><strong>${(p.pocet*p.cena).toLocaleString('cs-CZ')} Kč</strong></span></div>
+    </div>`).join('')}
+  <div class="divider"></div>
+  <div class="row total"><span>CELKEM:</span><span>${prodej.celkem.toLocaleString('cs-CZ')} Kč</span></div>
+  <div class="row"><span>Platba:</span><span>${prodej.platba==='hotovost'?'Hotovost':prodej.platba==='karta'?'Karta':'QR platba'}</span></div>
+  ${prodej.poznamka?`<div style="margin-top:8px;font-size:11px;color:#666">Poznámka: ${prodej.poznamka}</div>`:''}
+  <div class="footer">
+    <div class="divider"></div>
+    <div>Děkujeme za nákup! 🦔</div>
+    <div>www.detskekrucky.cz</div>
+  </div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  pw.document.close();
+}
+
+function smazatProdej(idx) {
+  const realIdx = prodejnaData.length - 1 - idx;
+  if (!confirm('Opravdu smazat tento prodej?')) return;
+  prodejnaData.splice(realIdx, 1);
+  localStorage.setItem('prodejnaData', JSON.stringify(prodejnaData));
+  loadProdejna();
+}
 
 // KATEGORIE
 async function loadKategorie() {
