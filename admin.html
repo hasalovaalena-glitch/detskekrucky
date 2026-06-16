@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Dětské krůčky</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Dancing+Script:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#fff8f0;
+  --brown:#8B4513;
+  --brown-dark:#5C2E00;
+  --tan:#D2B48C;
+  --tan-light:#F5E6D3;
+  --text:#3d2b1f;
+  --text-light:#7a5c42;
+  --sage:#6bbf7a;
+  --red:#e74c3c;
+  --blue:#3498db;
+  --orange:#f39c12;
+}
+body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+
+/* LOGIN */
+.login-overlay{position:fixed;inset:0;background:var(--cream);display:flex;align-items:center;justify-content:center;z-index:1000}
+.login-box{background:#fff;border-radius:20px;padding:48px;box-shadow:0 8px 32px rgba(139,69,19,0.15);width:100%;max-width:400px;text-align:center}
+.login-logo{font-family:'Dancing Script',cursive;font-size:2rem;color:var(--brown);margin-bottom:8px}
+.login-sub{color:var(--text-light);font-size:0.85rem;margin-bottom:32px}
+.login-box input{width:100%;padding:14px 16px;border:2px solid var(--tan-light);border-radius:10px;font-size:1rem;outline:none;margin-bottom:16px;font-family:'Lato',sans-serif}
+.login-box input:focus{border-color:var(--brown)}
+.login-btn{width:100%;padding:14px;background:var(--brown);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif}
+.login-btn:hover{background:var(--brown-dark)}
+.login-error{color:var(--red);font-size:0.85rem;margin-top:12px;display:none}
+
+/* LAYOUT */
+.admin-wrap{display:none;min-height:100vh}
+.sidebar{width:220px;background:#fff;border-right:2px solid var(--tan-light);position:fixed;top:0;left:0;bottom:0;padding:24px 0;display:flex;flex-direction:column}
+.sidebar-logo{font-family:'Dancing Script',cursive;font-size:1.4rem;color:var(--brown);padding:0 20px 24px;border-bottom:1px solid var(--tan-light);margin-bottom:16px}
+.sidebar-logo span{display:block;font-family:'Lato',sans-serif;font-size:0.7rem;color:var(--text-light);font-weight:400}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 20px;cursor:pointer;color:var(--text-light);font-weight:600;font-size:0.9rem;transition:all 0.2s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--tan-light);color:var(--brown)}
+.nav-item.active{background:var(--tan-light);color:var(--brown);border-left-color:var(--brown)}
+.nav-item .icon{font-size:1.1rem;width:20px}
+.sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--tan-light)}
+.logout-btn{width:100%;padding:10px;background:none;border:2px solid var(--tan);border-radius:8px;color:var(--text-light);cursor:pointer;font-family:'Lato',sans-serif;font-weight:600;font-size:0.85rem}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+
+.main{margin-left:220px;padding:32px}
+.page{display:none}
+.page.active{display:block}
+.page-title{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--brown);margin-bottom:24px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:#fff;border-radius:16px;padding:20px;border:1px solid var(--tan-light)}
+.stat-label{font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat-value{font-size:1.8rem;font-weight:700;color:var(--brown);font-family:'Playfair Display',serif}
+.stat-sub{font-size:0.78rem;color:var(--sage);margin-top:4px}
+
+/* TABLE */
+.table-wrap{background:#fff;border-radius:16px;border:1px solid var(--tan-light);overflow:hidden}
+.table-header{padding:20px 24px;border-bottom:1px solid var(--tan-light);display:flex;justify-content:space-between;align-items:center}
+.table-header h3{font-family:'Playfair Display',serif;color:var(--brown);font-size:1.1rem}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 16px;text-align:left;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);border-bottom:1px solid var(--tan-light);background:var(--cream)}
+td{padding:14px 16px;border-bottom:1px solid #faf0e6;font-size:0.88rem}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fffaf5}
+.badge{padding:4px 10px;border-radius:20px;font-size:0.75rem;font-weight:700}
+.badge-nova{background:#e8f7ee;color:#2ecc71}
+.badge-vyrizuje{background:#fff3cd;color:#f39c12}
+.badge-odeslano{background:#d6eaf8;color:#3498db}
+.badge-doruceno{background:#e8f7ee;color:#27ae60}
+.badge-zruseno{background:#fde8e8;color:#e74c3c}
+
+/* BUTTONS */
+.btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'Lato',sans-serif;font-weight:700;font-size:0.82rem}
+.btn-primary{background:var(--brown);color:#fff}
+.btn-primary:hover{background:var(--brown-dark)}
+.btn-sm{padding:5px 10px;font-size:0.75rem}
+.btn-green{background:var(--sage);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-blue{background:var(--blue);color:#fff}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:0.82rem;font-weight:700;color:var(--text-light)}
+.form-group input,.form-group select,.form-group textarea{padding:10px 12px;border:2px solid var(--tan-light);border-radius:8px;font-family:'Lato',sans-serif;font-size:0.9rem;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:var(--brown)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:500}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal h3{font-family:'Playfair Display',serif;color:var(--brown);margin-bottom:24px;font-size:1.3rem}
+.modal-footer{display:flex;gap:12px;justify-content:flex-end;margin-top:24px}
+
+.loading{text-align:center;padding:40px;color:var(--text-light)}
+.empty{text-align:center;padding:40px;color:var(--text-light);font-style:italic}
+.error-msg{background:#fde8e8;color:var(--red);padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:0.85rem}
+.success-msg{background:#e8f7ee;color:#27ae60;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:0.85rem}
+
+.refresh-btn{background:none;border:2px solid var(--tan);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:0.82rem;color:var(--text-light);font-family:'Lato',sans-serif}
+.refresh-btn:hover{border-color:var(--brown);color:var(--brown)}
+
+select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px;font-size:0.8rem;cursor:pointer}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">Dětské krůčky</div>
+    <div class="login-sub">Admin přístup</div>
+    <input type="password" id="passwordInput" placeholder="Heslo" onkeydown="if(event.key==='Enter')login()">
+    <button class="login-btn" onclick="login()">Přihlásit se</button>
+    <div class="login-error" id="loginError">Špatné heslo!</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-wrap" id="adminWrap">
+  <div class="sidebar">
+    <div class="sidebar-logo">Dětské krůčky <span>Admin panel</span></div>
+    <div class="nav-item active" onclick="showPage('prehled')"><span class="icon">📊</span> Přehled</div>
+    <div class="nav-item" onclick="showPage('objednavky')"><span class="icon">📦</span> Objednávky</div>
+    <div class="nav-item" onclick="showPage('zakaznici')"><span class="icon">👥</span> Zákazníci</div>
+    <div class="nav-item" onclick="showPage('sklad')"><span class="icon">🏪</span> Sklad</div>
+    <div class="nav-item" onclick="showPage('produkty')"><span class="icon">👟</span> Produkty</div>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="logout()">Odhlásit se</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- PŘEHLED -->
+    <div class="page active" id="page-prehled">
+      <div class="page-title">Přehled</div>
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card"><div class="stat-label">Objednávky celkem</div><div class="stat-value" id="statObjednavky">...</div></div>
+        <div class="stat-card"><div class="stat-label">Zákazníci</div><div class="stat-value" id="statZakaznici">...</div></div>
+        <div class="stat-card"><div class="stat-label">Produkty</div><div class="stat-value" id="statProdukty">12</div></div>
+        <div class="stat-card"><div class="stat-label">Nízký stav skladu</div><div class="stat-value" id="statNizkyStav" style="color:var(--red)">...</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Poslední objednávky</h3><button class="refresh-btn" onclick="loadPrehled()">↻ Obnovit</button></div>
+        <div id="prehledTable"><div class="loading">Načítám...</div></div>
+      </div>
+    </div>
+
+    <!-- OBJEDNÁVKY -->
+    <div class="page" id="page-objednavky">
+      <div class="page-title">Objednávky</div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Všechny objednávky</h3><button class="refresh-btn" onclick="loadObjednavky()">↻ Obnovit</button></div>
+        <div id="objednavkyTable"><div class="loading">Načítám...</div></div>
+      </div>
+    </div>
+
+    <!-- ZÁKAZNÍCI -->
+    <div class="page" id="page-zakaznici">
+      <div class="page-title">Zákazníci</div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Seznam zákazníků</h3><button class="refresh-btn" onclick="loadZakaznici()">↻ Obnovit</button></div>
+        <div id="zakazniciTable"><div class="loading">Načítám...</div></div>
+      </div>
+    </div>
+
+    <!-- SKLAD -->
+    <div class="page" id="page-sklad">
+      <div class="page-title">Sklad</div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Stav skladu</h3><button class="refresh-btn" onclick="loadSklad()">↻ Obnovit</button></div>
+        <div id="skladTable"><div class="loading">Načítám...</div></div>
+      </div>
+    </div>
+
+    <!-- PRODUKTY -->
+    <div class="page" id="page-produkty">
+      <div class="page-title">Produkty</div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Seznam produktů</h3>
+          <button class="btn btn-primary" onclick="openNovyProdukt()">+ Nový produkt</button>
+        </div>
+        <div id="produktyTable"><div class="loading">Načítám...</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVÝ PRODUKT -->
+<div class="modal-overlay" id="modalProdukt">
+  <div class="modal">
+    <h3>Nový produkt</h3>
+    <div id="produktMsg"></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Název</label><input type="text" id="pNazev" placeholder="Softshellové boty"></div>
+      <div class="form-group"><label>Značka</label><input type="text" id="pZnacka" placeholder="Superfit"></div>
+      <div class="form-group"><label>Cena (Kč)</label><input type="number" id="pCena" placeholder="1290"></div>
+      <div class="form-group"><label>Původní cena (Kč)</label><input type="number" id="pCenaPuvodni" placeholder="volitelné"></div>
+      <div class="form-group"><label>Kategorie</label>
+        <select id="pKategorie">
+          <option value="toddler">Batolata</option>
+          <option value="boys">Kluci</option>
+          <option value="girls">Holky</option>
+          <option value="sport">Sport</option>
+          <option value="winter">Zima</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Emoji</label><input type="text" id="pEmoji" placeholder="👟"></div>
+    </div>
+    <div class="form-group"><label>Popis</label><textarea id="pPopis" rows="3" placeholder="Popis produktu..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modalProdukt')">Zrušit</button>
+      <button class="btn btn-primary" onclick="ulozitProdukt()">Uložit produkt</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://detskekrucky1.onrender.com/api';
+const HESLO = 'detskekrucky';
+
+function login() {
+  const pwd = document.getElementById('passwordInput').value;
+  if (pwd === HESLO) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('adminWrap').style.display = 'flex';
+    sessionStorage.setItem('adminLoggedIn', '1');
+    loadPrehled();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('adminLoggedIn');
+  location.reload();
+}
+
+if (sessionStorage.getItem('adminLoggedIn')) {
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('adminWrap').style.display = 'flex';
+  loadPrehled();
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'objednavky') loadObjednavky();
+  if (name === 'zakaznici') loadZakaznici();
+  if (name === 'sklad') loadSklad();
+  if (name === 'produkty') loadProdukty();
+}
+
+function stavBadge(stav) {
+  const map = {nova:'badge-nova', vyrizuje:'badge-vyrizuje', odeslano:'badge-odeslano', doruceno:'badge-doruceno', zruseno:'badge-zruseno'};
+  return `<span class="badge ${map[stav]||'badge-nova'}">${stav||'nová'}</span>`;
+}
+
+async function loadPrehled() {
+  try {
+    const [obj, zak, sklad] = await Promise.all([
+      fetch(API+'/objednavky').then(r=>r.json()),
+      fetch(API+'/auth/zakaznici').then(r=>r.json()).catch(()=>[]),
+      fetch(API+'/sklad/nizky-stav').then(r=>r.json()).catch(()=>[])
+    ]);
+    document.getElementById('statObjednavky').textContent = Array.isArray(obj) ? obj.length : '0';
+    document.getElementById('statZakaznici').textContent = Array.isArray(zak) ? zak.length : '—';
+    document.getElementById('statNizkyStav').textContent = Array.isArray(sklad) ? sklad.length : '0';
+    
+    const posledni = Array.isArray(obj) ? obj.slice(0,10) : [];
+    if (posledni.length === 0) {
+      document.getElementById('prehledTable').innerHTML = '<div class="empty">Zatím žádné objednávky</div>';
+      return;
+    }
+    document.getElementById('prehledTable').innerHTML = `
+      <table>
+        <thead><tr><th>ID</th><th>Zákazník</th><th>Celkem</th><th>Stav</th><th>Datum</th></tr></thead>
+        <tbody>${posledni.map(o=>`
+          <tr>
+            <td><strong>#${o.id}</strong></td>
+            <td>${o.jmeno||'—'}</td>
+            <td><strong>${o.celkem} Kč</strong></td>
+            <td>${stavBadge(o.stav)}</td>
+            <td>${new Date(o.vytvoreno).toLocaleDateString('cs-CZ')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    document.getElementById('prehledTable').innerHTML = '<div class="error-msg">Nepodařilo se načíst data</div>';
+  }
+}
+
+async function loadObjednavky() {
+  document.getElementById('objednavkyTable').innerHTML = '<div class="loading">Načítám...</div>';
+  try {
+    const data = await fetch(API+'/objednavky').then(r=>r.json());
+    if (!Array.isArray(data) || data.length === 0) {
+      document.getElementById('objednavkyTable').innerHTML = '<div class="empty">Zatím žádné objednávky</div>';
+      return;
+    }
+    document.getElementById('objednavkyTable').innerHTML = `
+      <table>
+        <thead><tr><th>ID</th><th>Zákazník</th><th>Celkem</th><th>Doprava</th><th>Stav</th><th>Datum</th><th>Akce</th></tr></thead>
+        <tbody>${data.map(o=>`
+          <tr>
+            <td><strong>#${o.id}</strong></td>
+            <td>${o.jmeno||'—'}<br><small style="color:var(--text-light)">${o.email||''}</small></td>
+            <td><strong>${o.celkem} Kč</strong></td>
+            <td>${o.doprava||'—'}</td>
+            <td>
+              <select class="stav-select" onchange="zmenitStav(${o.id}, this.value)">
+                <option ${o.stav==='nova'?'selected':''} value="nova">Nová</option>
+                <option ${o.stav==='vyrizuje'?'selected':''} value="vyrizuje">Vyřizuje se</option>
+                <option ${o.stav==='odeslano'?'selected':''} value="odeslano">Odesláno</option>
+                <option ${o.stav==='doruceno'?'selected':''} value="doruceno">Doručeno</option>
+                <option ${o.stav==='zruseno'?'selected':''} value="zruseno">Zrušeno</option>
+              </select>
+            </td>
+            <td>${new Date(o.vytvoreno).toLocaleDateString('cs-CZ')}</td>
+            <td><button class="btn btn-blue btn-sm" onclick="detailObjednavky(${o.id})">Detail</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    document.getElementById('objednavkyTable').innerHTML = '<div class="error-msg">Nepodařilo se načíst objednávky</div>';
+  }
+}
+
+async function zmenitStav(id, stav) {
+  try {
+    await fetch(API+'/objednavky/'+id+'/stav', {
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({stav})
+    });
+  } catch(e) { alert('Chyba při změně stavu'); }
+}
+
+async function detailObjednavky(id) {
+  try {
+    const data = await fetch(API+'/objednavky/'+id).then(r=>r.json());
+    const polozky = data.polozky || [];
+    alert(`Objednávka #${id}\n\nZákazník: ${data.jmeno||'—'}\nEmail: ${data.email||'—'}\nTelefon: ${data.telefon||'—'}\nAdresa: ${data.ulice||'—'}, ${data.mesto||'—'} ${data.psc||''}\n\nPoložky:\n${polozky.map(p=>`- ${p.nazev} vel.${p.velikost} x${p.pocet} = ${p.cena} Kč`).join('\n')}\n\nCelkem: ${data.celkem} Kč`);
+  } catch(e) { alert('Nepodařilo se načíst detail'); }
+}
+
+async function loadZakaznici() {
+  document.getElementById('zakazniciTable').innerHTML = '<div class="loading">Načítám...</div>';
+  try {
+    const data = await fetch(API+'/auth/zakaznici').then(r=>r.json());
+    if (!Array.isArray(data) || data.length === 0) {
+      document.getElementById('zakazniciTable').innerHTML = '<div class="empty">Zatím žádní zákazníci</div>';
+      return;
+    }
+    document.getElementById('zakazniciTable').innerHTML = `
+      <table>
+        <thead><tr><th>ID</th><th>Jméno</th><th>Email</th><th>Telefon</th><th>Město</th><th>Registrace</th></tr></thead>
+        <tbody>${data.map(z=>`
+          <tr>
+            <td>${z.id}</td>
+            <td><strong>${z.jmeno}</strong></td>
+            <td>${z.email}</td>
+            <td>${z.telefon||'—'}</td>
+            <td>${z.mesto||'—'}</td>
+            <td>${new Date(z.vytvoreno).toLocaleDateString('cs-CZ')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    document.getElementById('zakazniciTable').innerHTML = '<div class="error-msg">Nepodařilo se načíst zákazníky</div>';
+  }
+}
+
+async function loadSklad() {
+  document.getElementById('skladTable').innerHTML = '<div class="loading">Načítám...</div>';
+  try {
+    const data = await fetch(API+'/sklad').then(r=>r.json());
+    if (!Array.isArray(data) || data.length === 0) {
+      document.getElementById('skladTable').innerHTML = '<div class="empty">Sklad je prázdný</div>';
+      return;
+    }
+    document.getElementById('skladTable').innerHTML = `
+      <table>
+        <thead><tr><th>Produkt</th><th>Značka</th><th>Velikost</th><th>Kusů</th><th>Stav</th><th>Akce</th></tr></thead>
+        <tbody>${data.map(s=>`
+          <tr>
+            <td><strong>${s.nazev}</strong></td>
+            <td>${s.znacka}</td>
+            <td>${s.velikost}</td>
+            <td><strong>${s.pocet_kusu}</strong></td>
+            <td>${s.nizky_stav ? '<span class="badge badge-zruseno">Nízký stav</span>' : '<span class="badge badge-nova">OK</span>'}</td>
+            <td>
+              <button class="btn btn-green btn-sm" onclick="naskladnit(${s.id},${s.velikost})">+ Naskladnit</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    document.getElementById('skladTable').innerHTML = '<div class="error-msg">Nepodařilo se načíst sklad</div>';
+  }
+}
+
+async function naskladnit(produktId, velikost) {
+  const pocet = prompt('Kolik kusů naskladnit?');
+  if (!pocet || isNaN(pocet)) return;
+  try {
+    await fetch(API+'/sklad/naskladnit', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({produkt_id: produktId, velikost, pocet: parseInt(pocet), poznamka: 'Naskladnění z adminu'})
+    });
+    alert('Naskladněno!');
+    loadSklad();
+  } catch(e) { alert('Chyba při naskladnění'); }
+}
+
+async function loadProdukty() {
+  document.getElementById('produktyTable').innerHTML = '<div class="loading">Načítám...</div>';
+  try {
+    const data = await fetch(API+'/sklad').then(r=>r.json());
+    const produkty = {};
+    if (Array.isArray(data)) {
+      data.forEach(s => { if (!produkty[s.id]) produkty[s.id] = s; });
+    }
+    const list = Object.values(produkty);
+    if (list.length === 0) {
+      document.getElementById('produktyTable').innerHTML = '<div class="empty">Žádné produkty</div>';
+      return;
+    }
+    document.getElementById('produktyTable').innerHTML = `
+      <table>
+        <thead><tr><th>ID</th><th>Název</th><th>Značka</th><th>Kategorie</th><th>Cena</th></tr></thead>
+        <tbody>${list.map(p=>`
+          <tr>
+            <td>${p.id}</td>
+            <td><strong>${p.nazev}</strong></td>
+            <td>${p.znacka}</td>
+            <td>${p.kategorie}</td>
+            <td>${p.cena} Kč</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    document.getElementById('produktyTable').innerHTML = '<div class="error-msg">Nepodařilo se načíst produkty</div>';
+  }
+}
+
+function openNovyProdukt() {
+  document.getElementById('modalProdukt').classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+async function ulozitProdukt() {
+  const nazev = document.getElementById('pNazev').value;
+  const znacka = document.getElementById('pZnacka').value;
+  const cena = document.getElementById('pCena').value;
+  const cena_puvodni = document.getElementById('pCenaPuvodni').value;
+  const kategorie = document.getElementById('pKategorie').value;
+  const emoji = document.getElementById('pEmoji').value;
+  const popis = document.getElementById('pPopis').value;
+
+  if (!nazev || !cena) {
+    document.getElementById('produktMsg').innerHTML = '<div class="error-msg">Vyplňte název a cenu</div>';
+    return;
+  }
+
+  try {
+    const res = await fetch(API+'/produkty', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({nazev, znacka, cena: parseInt(cena), cena_puvodni: cena_puvodni ? parseInt(cena_puvodni) : null, kategorie, emoji, popis})
+    });
+    if (res.ok) {
+      document.getElementById('produktMsg').innerHTML = '<div class="success-msg">Produkt uložen!</div>';
+      setTimeout(() => closeModal('modalProdukt'), 1500);
+      loadProdukty();
+    } else {
+      document.getElementById('produktMsg').innerHTML = '<div class="error-msg">Chyba při ukládání</div>';
+    }
+  } catch(e) {
+    document.getElementById('produktMsg').innerHTML = '<div class="error-msg">Chyba spojení</div>';
+  }
+}
+
+function loadPrehled() {
+  loadPrehledData();
+}
+
+async function loadPrehledData() {
+  try {
+    const [obj, sklad] = await Promise.all([
+      fetch(API+'/objednavky').then(r=>r.json()).catch(()=>[]),
+      fetch(API+'/sklad/nizky-stav').then(r=>r.json()).catch(()=>[])
+    ]);
+    document.getElementById('statObjednavky').textContent = Array.isArray(obj) ? obj.length : '0';
+    document.getElementById('statNizkyStav').textContent = Array.isArray(sklad) ? sklad.length : '0';
+    
+    const posledni = Array.isArray(obj) ? obj.slice(0,10) : [];
+    if (posledni.length === 0) {
+      document.getElementById('prehledTable').innerHTML = '<div class="empty">Zatím žádné objednávky</div>';
+      return;
+    }
+    document.getElementById('prehledTable').innerHTML = `
+      <table>
+        <thead><tr><th>ID</th><th>Zákazník</th><th>Celkem</th><th>Stav</th><th>Datum</th></tr></thead>
+        <tbody>${posledni.map(o=>`
+          <tr>
+            <td><strong>#${o.id}</strong></td>
+            <td>${o.jmeno||'—'}</td>
+            <td><strong>${o.celkem} Kč</strong></td>
+            <td>${stavBadge(o.stav)}</td>
+            <td>${new Date(o.vytvoreno).toLocaleDateString('cs-CZ')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    document.getElementById('prehledTable').innerHTML = '<div class="error-msg">Nepodařilo se načíst data</div>';
+  }
+}
+</script>
+</body>
+</html>
