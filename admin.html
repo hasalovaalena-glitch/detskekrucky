@@ -418,7 +418,7 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
     <div class="form-grid-3">
       <div class="form-group"><label>Cena (Kč) *</label><input type="number" id="pCena" placeholder="1290"></div>
       <div class="form-group"><label>Původní cena</label><input type="number" id="pCenaPuvodni" placeholder="volitelné"></div>
-      <div class="form-group"><label>Emoji</label><input type="text" id="pEmoji" placeholder="👟"></div>
+      <div class="form-group"><label>URL fotky</label><input type="text" id="pEmoji" placeholder="https://i.imgur.com/...jpg"></div>
     </div>
     <div class="form-group"><label>Kategorie</label>
       <select id="pKategorie">
@@ -463,6 +463,7 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
       <div class="form-group"><label>Cena (Kč)</label><input type="number" id="upCena"></div>
       <div class="form-group"><label>Původní cena</label><input type="number" id="upCenaPuvodni"></div>
     </div>
+    <div class="form-group"><label>URL fotky</label><input type="text" id="upEmoji" placeholder="https://i.imgur.com/...jpg"></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('modalUpravitProdukt')">Zrušit</button>
       <button class="btn btn-primary" onclick="ulozitUpravuProduktu()">💾 Uložit</button>
@@ -869,7 +870,7 @@ async function loadProdukty() {
     document.getElementById('produktyTable').innerHTML=`
       <table><thead><tr><th>ID</th><th>Název</th><th>Značka</th><th>Kategorie</th><th>Cena</th><th>Celkem ks</th><th>Akce</th></tr></thead>
       <tbody>${list.map(p=>`<tr>
-        <td>${p.id}</td><td><strong>${p.nazev}</strong></td><td>${p.znacka}</td>
+        <td>${p.id}</td><td>${p.emoji && p.emoji.startsWith("http") ? `<img src="${p.emoji}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;margin-right:8px">` : p.emoji || ""}  <strong>${p.nazev}</strong></td><td>${p.znacka}</td>
         <td>${p.kategorie}</td><td><strong>${p.cena.toLocaleString('cs-CZ')} Kč</strong></td>
         <td><strong>${p.celkem} ks</strong></td>
         <td><button class="btn btn-orange btn-sm" onclick="upravitProdukt(${p.id},'${p.nazev.replace(/'/g,"\\'")}','${p.znacka}',${p.cena},${p.cena_puvodni||0})">✏️ Upravit</button></td>
@@ -892,12 +893,13 @@ async function ulozitProdukt() {
   } catch(e) { document.getElementById('produktMsg').innerHTML='<div class="error-msg">Chyba</div>'; }
 }
 
-function upravitProdukt(id,nazev,znacka,cena,cenaPuvodni) {
+function upravitProdukt(id,nazev,znacka,cena,cenaPuvodni,emoji) {
   document.getElementById('upId').value=id;
   document.getElementById('upNazev').value=nazev;
   document.getElementById('upZnacka').value=znacka;
   document.getElementById('upCena').value=cena;
   document.getElementById('upCenaPuvodni').value=cenaPuvodni||'';
+  document.getElementById('upEmoji').value=emoji||'';
   openModal('modalUpravitProdukt');
 }
 
@@ -906,7 +908,7 @@ async function ulozitUpravuProduktu() {
   try {
     const res = await fetch(API+'/produkty/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({nazev:document.getElementById('upNazev').value,znacka:document.getElementById('upZnacka').value,
-      cena:parseInt(document.getElementById('upCena').value),cena_puvodni:document.getElementById('upCenaPuvodni').value||null})});
+      cena:parseInt(document.getElementById('upCena').value),cena_puvodni:document.getElementById('upCenaPuvodni').value||null,emoji:document.getElementById('upEmoji').value||''})});
     if (res.ok) { document.getElementById('upravitMsg').innerHTML='<div class="success-msg">✅ Uloženo!</div>'; setTimeout(()=>{closeModal('modalUpravitProdukt');loadProdukty();},1500); }
     else { document.getElementById('upravitMsg').innerHTML='<div class="error-msg">Chyba serveru</div>'; }
   } catch(e) { document.getElementById('upravitMsg').innerHTML='<div class="error-msg">Chyba</div>'; }
