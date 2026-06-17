@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const pool = require('./db/pool');
 const skladRoutes = require('./routes/sklad');
@@ -32,6 +32,6 @@ app.use('/api/platby', platbyRoutes);
 app.use('/api/kategorie', skladRoutes);
 app.use('/api/produkty', skladRoutes);
 app.listen> {
-  console.log('Server bÄ›ĹľĂ­ na http://127.0.0.1:3000');
+  console.log('Server bezi na http://127.0.0.1:3000');
 });
 
