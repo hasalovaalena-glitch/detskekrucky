@@ -31,7 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/platby', platbyRoutes);
 app.use('/api/kategorie', skladRoutes);
 app.use('/api/produkty', skladRoutes);
-app.listen> {
+app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
 
