@@ -35,3 +35,7 @@ app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
 
+$content = Get-Content "C:\projekty\detskekrucky\index.js" -Raw
+$content = $content -replace "const skladRoutes", "const kategorieRoutes = require('./routes/kategorie');`nconst skladRoutes"
+$content = $content -replace "app.use\('/api/kategorie', skladRoutes\);", "app.use('/api/kategorie', kategorieRoutes);"
+Set-Content "C:\projekty\detskekrucky\index.js" $content -Encoding UTF8
