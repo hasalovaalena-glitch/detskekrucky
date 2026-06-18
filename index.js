@@ -30,7 +30,7 @@ app.use('/api/sklad', skladRoutes);
 app.use('/api/objednavky', objednavkyRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/platby', platbyRoutes);
-app.use('/api/kategorie', skladRoutes);
+
 app.use('/api/produkty', skladRoutes);
 app.use('/api/kategorie', kategorieRoutes);
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
