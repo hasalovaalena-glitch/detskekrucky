@@ -5,12 +5,13 @@ const skladRoutes = require('./routes/sklad');
 const objednavkyRoutes = require('./routes/objednavky');
 const authRoutes = require('./routes/auth');
 const platbyRoutes = require('./routes/platby');
-const kategorieRoutes = require('./routes/kategorie');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 const path = require('path');
 app.use(express.static(path.join(__dirname)));
+const kategorieRoutes = require('./routes/kategorie');
 
 app.get('/', (req, res) => {
   res.json({ zprava: 'DÄ›tskĂ© krĹŻÄŤky API funguje!' });
@@ -31,7 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/platby', platbyRoutes);
 app.use('/api/kategorie', skladRoutes);
 app.use('/api/produkty', skladRoutes);
-app.use('/api/kategorie', skladRoutes);
+app.use('/api/kategorie', kategorieRoutes);
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
