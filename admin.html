@@ -238,14 +238,6 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
       <div class="nav-label">Nastavení</div>
       <div class="nav-item" onclick="showPage('nastaveni',this)"><span class="icon">⚙️</span> Nastavení</div>
     </div>
-    <div class="nav-section">
-      <div class="nav-label">Nastavení</div>
-      <div class="nav-item" onclick="showPage('nastaveni',this)"><span class="icon">⚙️</span> Nastavení</div>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Nastavení</div>
-      <div class="nav-item" onclick="showPage('nastaveni',this)"><span class="icon">⚙️</span> Nastavení</div>
-    </div>
     <div class="sidebar-footer">
       <button class="logout-btn" onclick="logout()">🚪 Odhlásit se</button>
     </div>
@@ -1136,6 +1128,25 @@ async function ulozitOteviracku() {
     }
   } catch(e) {
     document.getElementById('nastaveni-msg').textContent = '❌ Chyba při ukládání';
+  }
+}async function ulozitBanner() {
+  const data = {
+    text: document.getElementById('banner-text').value,
+    barva: document.getElementById('banner-barva').value,
+    aktivni: document.getElementById('banner-aktivni').value
+  };
+  try {
+    const r = await fetch(API + '/api/nastaveni/banner', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminHeslo },
+      body: JSON.stringify(data)
+    });
+    if (r.ok) {
+      document.getElementById('banner-msg').textContent = '✅ Banner uložen!';
+      setTimeout(() => document.getElementById('banner-msg').textContent = '', 3000);
+    }
+  } catch(e) {
+    document.getElementById('banner-msg').textContent = '❌ Chyba při ukládání';
   }
 }
 async function loadUcetnictvi() {
