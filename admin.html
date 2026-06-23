@@ -234,6 +234,18 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
     <div class="nav-item" onclick="showPage('kategorie',this)"><span class="icon">🏷️</span> Kategorie</div>
     <div class="nav-item" onclick="showPage('ucetnictvi',this)"><span class="icon">💰</span> Účetnictví</div>
     </div>
+    <div class="nav-section">
+      <div class="nav-label">Nastavení</div>
+      <div class="nav-item" onclick="showPage('nastaveni',this)"><span class="icon">⚙️</span> Nastavení</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Nastavení</div>
+      <div class="nav-item" onclick="showPage('nastaveni',this)"><span class="icon">⚙️</span> Nastavení</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Nastavení</div>
+      <div class="nav-item" onclick="showPage('nastaveni',this)"><span class="icon">⚙️</span> Nastavení</div>
+    </div>
     <div class="sidebar-footer">
       <button class="logout-btn" onclick="logout()">🚪 Odhlásit se</button>
     </div>
@@ -421,6 +433,29 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
       <div class="table-wrap">
         <div class="table-header"><h3>📋 Přehled objednávek pro účetní</h3></div>
         <div id="ucetObjednavky"><div class="loading">Načítám...</div></div>
+      </div>
+    </div>
+
+    <!-- NASTAVENÍ -->
+    <div class="page" id="page-nastaveni">
+      <div class="page-header">
+        <div class="page-title">⚙️ Nastavení</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>🕐 Otevírací doba</h3></div>
+        <div style="padding:20px">
+          <table style="width:100%;border-collapse:collapse">
+            <tr><td style="padding:8px;font-weight:600">Pondělí</td><td><input id="hod-po" class="form-input" placeholder="např. 9:00–17:00"></td></tr>
+            <tr><td style="padding:8px;font-weight:600">Úterý</td><td><input id="hod-ut" class="form-input" placeholder="např. 9:00–17:00"></td></tr>
+            <tr><td style="padding:8px;font-weight:600">Středa</td><td><input id="hod-st" class="form-input" placeholder="např. 9:00–17:00"></td></tr>
+            <tr><td style="padding:8px;font-weight:600">Čtvrtek</td><td><input id="hod-ct" class="form-input" placeholder="např. 9:00–17:00"></td></tr>
+            <tr><td style="padding:8px;font-weight:600">Pátek</td><td><input id="hod-pa" class="form-input" placeholder="např. 9:00–17:00"></td></tr>
+            <tr><td style="padding:8px;font-weight:600">Sobota</td><td><input id="hod-so" class="form-input" placeholder="např. Zavřeno"></td></tr>
+            <tr><td style="padding:8px;font-weight:600">Neděle</td><td><input id="hod-ne" class="form-input" placeholder="např. Zavřeno"></td></tr>
+          </table>
+          <button class="btn btn-primary" style="margin-top:16px" onclick="ulozitOteviracku()">💾 Uložit otevírací dobu</button>
+          <div id="nastaveni-msg" style="margin-top:12px;color:green;font-weight:600"></div>
+        </div>
       </div>
     </div>
 
@@ -616,6 +651,11 @@ function showPage(name, el) {
   if (name==='ucetnictvi') loadUcetnictvi();
   if (name==='kategorie') loadKategorie();
   if (name==='prodejna') { loadProdejna(); nacistSkladProProdejna(); }
+  if (name==='nastaveni') loadNastaveni();
+  if (name==='nastaveni') loadNastaveni();
+  if (name==='nastaveni') loadNastaveni();
+  if (name==='nastaveni') loadNastaveni();
+  if (name==='nastaveni') loadNastaveni();
   // Close mobile sidebar
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -1018,6 +1058,47 @@ async function ulozitUpravuProduktu() {
 }
 
 // ÚČETNICTVÍ
+// NASTAVENÍ - Otevírací doba
+async function loadNastaveni() {
+  try {
+    const r = await fetch(API + '/api/nastaveni/oteviraci-doba');
+    if (r.ok) {
+      const data = await r.json();
+      document.getElementById('hod-po').value = data.pondeli || '';
+      document.getElementById('hod-ut').value = data.utery || '';
+      document.getElementById('hod-st').value = data.streda || '';
+      document.getElementById('hod-ct').value = data.ctvrtek || '';
+      document.getElementById('hod-pa').value = data.patek || '';
+      document.getElementById('hod-so').value = data.sobota || '';
+      document.getElementById('hod-ne').value = data.nedele || '';
+    }
+  } catch(e) { console.log('Nastavení nenačteno'); }
+}
+
+async function ulozitOteviracku() {
+  const data = {
+    pondeli: document.getElementById('hod-po').value,
+    utery: document.getElementById('hod-ut').value,
+    streda: document.getElementById('hod-st').value,
+    ctvrtek: document.getElementById('hod-ct').value,
+    patek: document.getElementById('hod-pa').value,
+    sobota: document.getElementById('hod-so').value,
+    nedele: document.getElementById('hod-ne').value
+  };
+  try {
+    const r = await fetch(API + '/api/nastaveni/oteviraci-doba', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminHeslo },
+      body: JSON.stringify(data)
+    });
+    if (r.ok) {
+      document.getElementById('nastaveni-msg').textContent = '✅ Otevírací doba uložena!';
+      setTimeout(() => document.getElementById('nastaveni-msg').textContent = '', 3000);
+    }
+  } catch(e) {
+    document.getElementById('nastaveni-msg').textContent = '❌ Chyba při ukládání';
+  }
+}
 async function loadUcetnictvi() {
   try {
     const data = await fetch(API+'/objednavky').then(r=>r.json());

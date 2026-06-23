@@ -33,11 +33,16 @@ app.use('/api/platby', platbyRoutes);
 
 app.use('/api/produkty', skladRoutes);
 app.use('/api/kategorie', kategorieRoutes);
+
+// Otevírací doba
+let oteviracka = {};
+app.get('/api/nastaveni/oteviraci-doba', (req, res) => {
+  res.json(oteviracka);
+});
+app.post('/api/nastaveni/oteviraci-doba', (req, res) => {
+  oteviracka = req.body;
+  res.json({ ok: true });
+});
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
-
-$content = Get-Content "C:\projekty\detskekrucky\index.js" -Raw
-$content = $content -replace "const skladRoutes", "const kategorieRoutes = require('./routes/kategorie');`nconst skladRoutes"
-$content = $content -replace "app.use\('/api/kategorie', skladRoutes\);", "app.use('/api/kategorie', kategorieRoutes);"
-Set-Content "C:\projekty\detskekrucky\index.js" $content -Encoding UTF8
