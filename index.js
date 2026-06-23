@@ -46,3 +46,12 @@ app.post('/api/nastaveni/oteviraci-doba', (req, res) => {
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
+// Banner
+let banner = {};
+app.get('/api/nastaveni/banner', (req, res) => {
+  res.json(banner);
+});
+app.post('/api/nastaveni/banner', (req, res) => {
+  banner = req.body;
+  res.json({ ok: true });
+});
