@@ -1083,7 +1083,7 @@ async function ulozitUpravuProduktu() {
 // NASTAVENÍ - Otevírací doba
 async function loadNastaveni() {
   try {
-    const r = await fetch(API + '/api/nastaveni/oteviraci-doba');
+    const r = await fetch(API + '/nastaveni/oteviraci-doba');
     if (r.ok) {
       const data = await r.json();
       document.getElementById('hod-po').value = data.pondeli || '';
@@ -1096,7 +1096,7 @@ async function loadNastaveni() {
     }
   } catch(e) { console.log('Nastavení nenačteno'); }
   try {
-    const r2 = await fetch(API + '/api/nastaveni/banner');
+    const r2 = await fetch(API + '/API + '/nastaveni/banner'nastaveni/oteviraci-doba');
     if (r2.ok) {
       const b = await r2.json();
       document.getElementById('banner-text').value = b.text || '';
