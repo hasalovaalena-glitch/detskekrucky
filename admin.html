@@ -1119,7 +1119,7 @@ async function ulozitOteviracku() {
   try {
     const r = await fetch(API + '/nastaveni/oteviraci-doba', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminHeslo },
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': HESLO },
       body: JSON.stringify(data)
     });
     if (r.ok) {
@@ -1136,7 +1136,7 @@ async function ulozitOteviracku() {
     aktivni: document.getElementById('banner-aktivni').value
   };
   try {
-    const r = await fetch(API + '/api/nastaveni/banner', {
+    const r = await fetch(API + '/nastaveni/banner', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': adminHeslo },
       body: JSON.stringify(data)
