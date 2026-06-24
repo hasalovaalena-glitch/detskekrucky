@@ -1096,7 +1096,7 @@ async function loadNastaveni() {
     }
   } catch(e) { console.log('Nastavení nenačteno'); }
   try {
-    const r2 = await fetch(API + '/API + '/nastaveni/banner'nastaveni/oteviraci-doba');
+    const r2 = await fetch(API + '/nastaveni/banner');
     if (r2.ok) {
       const b = await r2.json();
       document.getElementById('banner-text').value = b.text || '';
@@ -1117,7 +1117,7 @@ async function ulozitOteviracku() {
     nedele: document.getElementById('hod-ne').value
   };
   try {
-    const r = await fetch(API + '/api/nastaveni/oteviraci-doba', {
+    const r = await fetch(API + '/nastaveni/oteviraci-doba', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': adminHeslo },
       body: JSON.stringify(data)
