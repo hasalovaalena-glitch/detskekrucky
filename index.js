@@ -63,6 +63,36 @@ let textyWebu = {
     { nadpis: 'Gumáky', text: '' }
   ]
 };
+
+// Načtení textů z DB při startu
+async function nacistTextyZDB() {
+  try {
+    const result = await pool.query("SELECT hodnota FROM nastaveni WHERE klic = 'texty'");
+    if (result.rows.length > 0) {
+      textyWebu = result.rows[0].hodnota;
+    }
+  } catch(e) {
+    console.log('Texty z DB nenačteny:', e.message);
+  }
+}
+nacistTextyZDB();
+
+app.get('/api/nastaveni/texty', (req, res) => {
+  res.json(textyWebu);
+});
+
+app.post('/api/nastaveni/texty', async (req, res) => {
+  textyWebu = req.body;
+  try {
+    await pool.query(
+      "INSERT INTO nastaveni (klic, hodnota) VALUES ('texty', $1) ON CONFLICT (klic) DO UPDATE SET hodnota = $1",
+      [JSON.stringify(textyWebu)]
+    );
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ chyba: e.message });
+  }
+});
 app.post('/api/upload-obrazek', upload.single('obrazek'), async (req, res) => {
   try {
     const file = req.file;
