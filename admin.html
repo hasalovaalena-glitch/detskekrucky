@@ -1559,14 +1559,6 @@ async function ulozitTexty() {
     document.getElementById('textyMsg').innerHTML='<div class="error-msg">Chyba ukládání</div>';
   }
 }
-  try {
-    const res = await fetch(API+'/nastaveni/texty',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    if (res.ok) {
-      document.getElementById('textyMsg').innerHTML='<div class="success-msg">✅ Texty uloženy!</div>';
-      setTimeout(()=>document.getElementById('textyMsg').innerHTML='',3000);
-    } else { document.getElementById('textyMsg').innerHTML='<div class="error-msg">Chyba serveru</div>'; }
-  } catch(e) { document.getElementById('textyMsg').innerHTML='<div class="error-msg">Chyba</div>'; }
-}
 </script>
 </body>
 </html>
