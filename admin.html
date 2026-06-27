@@ -431,26 +431,24 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
 
     <!-- NASTAVENÍ -->
     <div class="page" id="page-texty">
-      <div class="page-header">
-        <div class="page-title">📝 Texty webu</div>
-        <button class="refresh-btn" onclick="loadTexty()">↻ Obnovit</button>
-      </div>
-      <div id="textyMsg"></div>
+  <div class="page-header">
+    <div class="page-title">📝 Texty webu</div>
+    <button class="refresh-btn" onclick="loadTexty()">↻ Obnovit</button>
+  </div>
+  <div id="textyMsg"></div>
 
-      <div class="card" style="margin-bottom:20px">
-        <h3 style="margin-bottom:16px">Sekce „Proč naboso?"</h3>
-        <div class="form-group"><label>Nadpis</label><input type="text" id="txNadpis" style="width:100%;padding:8px;border:1px solid var(--tan-light);border-radius:8px;font-family:inherit"></div>
-        <div class="form-group" style="margin-top:12px"><label>Popis (podnadpis)</label><textarea id="txPopis" rows="3" style="width:100%;padding:8px;border:1px solid var(--tan-light);border-radius:8px;font-family:inherit;resize:vertical"></textarea></div>
-      </div>
+  <div class="card" style="margin-bottom:20px">
+    <h3 style="margin-bottom:16px">Sekce „Proč barefoot?" (3 karty)</h3>
+    <div id="txProcBarefoot" style="display:flex;flex-direction:column;gap:16px"></div>
+  </div>
 
-      <div class="card" style="margin-bottom:20px">
-        <h3 style="margin-bottom:16px">Důvody</h3>
-        <div id="txDuvody" style="display:flex;flex-direction:column;gap:8px"></div>
-        <button class="btn btn-outline" style="margin-top:12px" onclick="pridatDuvod()">+ Přidat důvod</button>
-      </div>
+  <div class="card" style="margin-bottom:20px">
+    <h3 style="margin-bottom:16px">Sekce „Vyberte si" (4 karty)</h3>
+    <div id="txVyberteSi" style="display:flex;flex-direction:column;gap:16px"></div>
+  </div>
 
-      <button class="btn btn-primary" onclick="ulozitTexty()">💾 Uložit texty</button>
-    </div>
+  <button class="btn btn-primary" onclick="ulozitTexty()">💾 Uložit texty</button>
+</div>
 
     <div class="page" id="page-nastaveni">
       <div class="page-header">
@@ -1481,11 +1479,42 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 async function loadTexty() {
   try {
     const data = await fetch(API+'/nastaveni/texty').then(r=>r.json());
-    document.getElementById('txNadpis').value = data.procNaboso?.nadpis || '';
-    document.getElementById('txPopis').value = data.procNaboso?.popis || '';
-    const cont = document.getElementById('txDuvody');
-    cont.innerHTML = '';
-    (data.procNaboso?.duvody || []).forEach(d => pridatDuvod(d));
+
+    // Proč barefoot karty
+    const kontBarefoot = document.getElementById('txProcBarefoot');
+    kontBarefoot.innerHTML = '';
+    (data.procBarefoot || []).forEach((karta, i) => {
+      kontBarefoot.innerHTML += `
+        <div style="border:1px solid var(--tan-light);border-radius:10px;padding:12px">
+          <b>Karta ${i+1}</b>
+          <div class="form-group" style="margin-top:8px"><label>Ikona (emoji)</label>
+            <input type="text" id="bf_ikona_${i}" value="${karta.ikona||''}" style="width:80px;padding:6px;border:1px solid var(--tan-light);border-radius:6px;font-family:inherit;font-size:1.2rem">
+          </div>
+          <div class="form-group" style="margin-top:8px"><label>Nadpis</label>
+            <input type="text" id="bf_nadpis_${i}" value="${karta.nadpis||''}" style="width:100%;padding:6px;border:1px solid var(--tan-light);border-radius:6px;font-family:inherit">
+          </div>
+          <div class="form-group" style="margin-top:8px"><label>Text</label>
+            <textarea id="bf_text_${i}" rows="3" style="width:100%;padding:6px;border:1px solid var(--tan-light);border-radius:6px;font-family:inherit;resize:vertical">${karta.text||''}</textarea>
+          </div>
+        </div>`;
+    });
+
+    // Vyberte si karty
+    const kontVyberte = document.getElementById('txVyberteSi');
+    kontVyberte.innerHTML = '';
+    (data.vyberteSi || []).forEach((karta, i) => {
+      kontVyberte.innerHTML += `
+        <div style="border:1px solid var(--tan-light);border-radius:10px;padding:12px">
+          <b>Karta ${i+1}: ${karta.nadpis||''}</b>
+          <div class="form-group" style="margin-top:8px"><label>Nadpis</label>
+            <input type="text" id="vs_nadpis_${i}" value="${karta.nadpis||''}" style="width:100%;padding:6px;border:1px solid var(--tan-light);border-radius:6px;font-family:inherit">
+          </div>
+          <div class="form-group" style="margin-top:8px"><label>Text</label>
+            <textarea id="vs_text_${i}" rows="3" style="width:100%;padding:6px;border:1px solid var(--tan-light);border-radius:6px;font-family:inherit;resize:vertical">${karta.text||''}</textarea>
+          </div>
+        </div>`;
+    });
+
   } catch(e) {
     document.getElementById('textyMsg').innerHTML='<div class="error-msg">Chyba načítání</div>';
   }
@@ -1501,12 +1530,35 @@ function pridatDuvod(hodnota='') {
 }
 
 async function ulozitTexty() {
-  const duvody = [...document.querySelectorAll('#txDuvody input')].map(i=>i.value).filter(v=>v.trim());
-  const payload = { procNaboso: {
-    nadpis: document.getElementById('txNadpis').value,
-    popis: document.getElementById('txPopis').value,
-    duvody
-  }};
+  const procBarefoot = [0,1,2].map(i => ({
+    ikona: document.getElementById(`bf_ikona_${i}`)?.value || '',
+    nadpis: document.getElementById(`bf_nadpis_${i}`)?.value || '',
+    text: document.getElementById(`bf_text_${i}`)?.value || ''
+  }));
+
+  const vyberteSi = [0,1,2,3].map(i => ({
+    nadpis: document.getElementById(`vs_nadpis_${i}`)?.value || '',
+    text: document.getElementById(`vs_text_${i}`)?.value || ''
+  }));
+
+  const payload = { procBarefoot, vyberteSi };
+
+  try {
+    const res = await fetch(API+'/nastaveni/texty', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      document.getElementById('textyMsg').innerHTML='<div class="success-msg">✅ Texty uloženy</div>';
+      setTimeout(()=>document.getElementById('textyMsg').innerHTML='', 3000);
+    } else {
+      document.getElementById('textyMsg').innerHTML='<div class="error-msg">Chyba ukládání</div>';
+    }
+  } catch(e) {
+    document.getElementById('textyMsg').innerHTML='<div class="error-msg">Chyba ukládání</div>';
+  }
+}
   try {
     const res = await fetch(API+'/nastaveni/texty',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if (res.ok) {
