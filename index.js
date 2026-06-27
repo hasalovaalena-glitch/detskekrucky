@@ -5,7 +5,14 @@ const skladRoutes = require('./routes/sklad');
 const objednavkyRoutes = require('./routes/objednavky');
 const authRoutes = require('./routes/auth');
 const platbyRoutes = require('./routes/platby');
+const { createClient } = require('@supabase/supabase-js');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 
+const supabase = createClient(
+  'https://ipzkriwfcghlqfaqenaj.supabase.co',
+  'sb_publishable_OtUgL2vcvU17-s4FsdbrqQ_QWD98Xz8'
+);
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -56,6 +63,20 @@ let textyWebu = {
     { nadpis: 'Gumáky', text: '' }
   ]
 };
+app.post('/api/upload-obrazek', upload.single('obrazek'), async (req, res) => {
+  try {
+    const file = req.file;
+    const nazev = `produkt_${Date.now()}_${file.originalname}`;
+    const { data, error } = await supabase.storage
+      .from('produkty')
+      .upload(nazev, file.buffer, { contentType: file.mimetype, upsert: true });
+    if (error) return res.status(500).json({ chyba: error.message });
+    const url = `https://ipzkriwfcghlqfaqenaj.supabase.co/storage/v1/object/public/produkty/${nazev}`;
+    res.json({ url });
+  } catch(e) {
+    res.status(500).json({ chyba: e.message });
+  }
+});
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
