@@ -63,7 +63,37 @@ let textyWebu = {
     { nadpis: 'Gumáky', text: '' }
   ]
 };
+// Otevírací doba
+let oteviracka = {};
 
+async function nacistOtevirackaZDB() {
+  try {
+    const result = await pool.query("SELECT hodnota FROM nastaveni WHERE klic = 'oteviracka'");
+    if (result.rows.length > 0) {
+      oteviracka = result.rows[0].hodnota;
+    }
+  } catch(e) {
+    console.log('Oteviracka z DB nenactena:', e.message);
+  }
+}
+nacistOtevirackaZDB();
+
+app.get('/api/nastaveni/oteviraci-doba', (req, res) => {
+  res.json(oteviracka);
+});
+
+app.post('/api/nastaveni/oteviraci-doba', async (req, res) => {
+  oteviracka = req.body;
+  try {
+    await pool.query(
+      "INSERT INTO nastaveni (klic, hodnota) VALUES ('oteviracka', $1) ON CONFLICT (klic) DO UPDATE SET hodnota = $1",
+      [JSON.stringify(oteviracka)]
+    );
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ chyba: e.message });
+  }
+});
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
