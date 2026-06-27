@@ -237,6 +237,7 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
     <div class="nav-section">
       <div class="nav-label">Nastavení</div>
       <div class="nav-item" onclick="showPage('nastaveni',this)"><span class="icon">⚙️</span> Nastavení</div>
+      <div class="nav-item" onclick="showPage('texty',this)"><span class="icon">📝</span> Texty webu</div>
     </div>
     <div class="sidebar-footer">
       <button class="logout-btn" onclick="logout()">🚪 Odhlásit se</button>
@@ -429,6 +430,28 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
     </div>
 
     <!-- NASTAVENÍ -->
+    <div class="page" id="page-texty">
+      <div class="page-header">
+        <div class="page-title">📝 Texty webu</div>
+        <button class="refresh-btn" onclick="loadTexty()">↻ Obnovit</button>
+      </div>
+      <div id="textyMsg"></div>
+
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="margin-bottom:16px">Sekce „Proč naboso?"</h3>
+        <div class="form-group"><label>Nadpis</label><input type="text" id="txNadpis" style="width:100%;padding:8px;border:1px solid var(--tan-light);border-radius:8px;font-family:inherit"></div>
+        <div class="form-group" style="margin-top:12px"><label>Popis (podnadpis)</label><textarea id="txPopis" rows="3" style="width:100%;padding:8px;border:1px solid var(--tan-light);border-radius:8px;font-family:inherit;resize:vertical"></textarea></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="margin-bottom:16px">Důvody</h3>
+        <div id="txDuvody" style="display:flex;flex-direction:column;gap:8px"></div>
+        <button class="btn btn-outline" style="margin-top:12px" onclick="pridatDuvod()">+ Přidat důvod</button>
+      </div>
+
+      <button class="btn btn-primary" onclick="ulozitTexty()">💾 Uložit texty</button>
+    </div>
+
     <div class="page" id="page-nastaveni">
       <div class="page-header">
         <div class="page-title">⚙️ Nastavení</div>
@@ -596,6 +619,7 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
       <div class="form-group"><label>Původní cena</label><input type="number" id="upCenaPuvodni"></div>
     </div>
     <div class="form-group"><label>URL fotky</label><input type="text" id="upEmoji" placeholder="https://i.imgur.com/...jpg"></div>
+    <div class="form-group"><label>Popis</label><textarea id="upPopis" rows="3" style="width:100%;padding:8px;border:1px solid var(--tan-light);border-radius:8px;font-family:inherit;resize:vertical"></textarea></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('modalUpravitProdukt')">Zrušit</button>
       <button class="btn btn-primary" onclick="ulozitUpravuProduktu()">💾 Uložit</button>
@@ -648,10 +672,7 @@ function showPage(name, el) {
   if (name==='kategorie') loadKategorie();
   if (name==='prodejna') { loadProdejna(); nacistSkladProProdejna(); }
   if (name==='nastaveni') loadNastaveni();
-  if (name==='nastaveni') loadNastaveni();
-  if (name==='nastaveni') loadNastaveni();
-  if (name==='nastaveni') loadNastaveni();
-  if (name==='nastaveni') loadNastaveni();
+  if (name==='texty') loadTexty();
   // Close mobile sidebar
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -1012,7 +1033,7 @@ async function loadProdukty() {
         <td>${p.id}</td><td>${p.emoji && p.emoji.startsWith("http") ? `<img src="${p.emoji}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;margin-right:8px">` : p.emoji || ""}  <strong>${p.nazev}</strong></td><td>${p.znacka}</td>
         <td>${p.kategorie}</td><td><strong>${p.cena.toLocaleString('cs-CZ')} Kč</strong></td>
         <td><strong>${p.celkem} ks</strong></td>
-        <td><button class="btn btn-orange btn-sm" onclick="upravitProdukt(${p.id},'${p.nazev.replace(/'/g,"\\'")}','${p.znacka}',${p.cena},${p.cena_puvodni||0})">✏️ Upravit</button></td>
+        <td><button class="btn btn-orange btn-sm" onclick="upravitProdukt(${p.id},'${p.nazev.replace(/'/g,"\\'")}','${p.znacka}',${p.cena},${p.cena_puvodni||0},'${p.emoji||''}','${(p.popis||'').replace(/'/g,"\\'")}')">✏️ Upravit</button></td>
       </tr>`).join('')}</tbody></table>`;
   } catch(e) { document.getElementById('produktyTable').innerHTML='<div class="error-msg">Chyba</div>'; }
 }
@@ -1032,13 +1053,14 @@ async function ulozitProdukt() {
   } catch(e) { document.getElementById('produktMsg').innerHTML='<div class="error-msg">Chyba</div>'; }
 }
 
-function upravitProdukt(id,nazev,znacka,cena,cenaPuvodni,emoji) {
+function upravitProdukt(id,nazev,znacka,cena,cenaPuvodni,emoji,popis) {
   document.getElementById('upId').value=id;
   document.getElementById('upNazev').value=nazev;
   document.getElementById('upZnacka').value=znacka;
   document.getElementById('upCena').value=cena;
   document.getElementById('upCenaPuvodni').value=cenaPuvodni||'';
   document.getElementById('upEmoji').value=emoji||'';
+  document.getElementById('upPopis').value=popis||'';
   openModal('modalUpravitProdukt');
 }
 
@@ -1047,7 +1069,7 @@ async function ulozitUpravuProduktu() {
   try {
     const res = await fetch(API+'/produkty/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({nazev:document.getElementById('upNazev').value,znacka:document.getElementById('upZnacka').value,
-      cena:parseInt(document.getElementById('upCena').value),cena_puvodni:document.getElementById('upCenaPuvodni').value||null,emoji:document.getElementById('upEmoji').value||''})});
+      cena:parseInt(document.getElementById('upCena').value),cena_puvodni:document.getElementById('upCenaPuvodni').value||null,emoji:document.getElementById('upEmoji').value||'',popis:document.getElementById('upPopis').value||''})});
     if (res.ok) { document.getElementById('upravitMsg').innerHTML='<div class="success-msg">✅ Uloženo!</div>'; setTimeout(()=>{closeModal('modalUpravitProdukt');loadProdukty();},1500); }
     else { document.getElementById('upravitMsg').innerHTML='<div class="error-msg">Chyba serveru</div>'; }
   } catch(e) { document.getElementById('upravitMsg').innerHTML='<div class="error-msg">Chyba</div>'; }
@@ -1454,6 +1476,45 @@ async function smazatKategorii(id, nazev) {
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// TEXTY WEBU
+async function loadTexty() {
+  try {
+    const data = await fetch(API+'/nastaveni/texty').then(r=>r.json());
+    document.getElementById('txNadpis').value = data.procNaboso?.nadpis || '';
+    document.getElementById('txPopis').value = data.procNaboso?.popis || '';
+    const cont = document.getElementById('txDuvody');
+    cont.innerHTML = '';
+    (data.procNaboso?.duvody || []).forEach(d => pridatDuvod(d));
+  } catch(e) {
+    document.getElementById('textyMsg').innerHTML='<div class="error-msg">Chyba načítání</div>';
+  }
+}
+
+function pridatDuvod(hodnota='') {
+  const cont = document.getElementById('txDuvody');
+  const div = document.createElement('div');
+  div.style.cssText='display:flex;gap:8px;align-items:center';
+  div.innerHTML=`<input type="text" value="${hodnota}" style="flex:1;padding:8px;border:1px solid var(--tan-light);border-radius:8px;font-family:inherit">
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--red)">✕</button>`;
+  cont.appendChild(div);
+}
+
+async function ulozitTexty() {
+  const duvody = [...document.querySelectorAll('#txDuvody input')].map(i=>i.value).filter(v=>v.trim());
+  const payload = { procNaboso: {
+    nadpis: document.getElementById('txNadpis').value,
+    popis: document.getElementById('txPopis').value,
+    duvody
+  }};
+  try {
+    const res = await fetch(API+'/nastaveni/texty',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if (res.ok) {
+      document.getElementById('textyMsg').innerHTML='<div class="success-msg">✅ Texty uloženy!</div>';
+      setTimeout(()=>document.getElementById('textyMsg').innerHTML='',3000);
+    } else { document.getElementById('textyMsg').innerHTML='<div class="error-msg">Chyba serveru</div>'; }
+  } catch(e) { document.getElementById('textyMsg').innerHTML='<div class="error-msg">Chyba</div>'; }
+}
 </script>
 </body>
 </html>
