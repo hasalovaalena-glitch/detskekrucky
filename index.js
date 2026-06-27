@@ -43,13 +43,27 @@ app.use('/api/kategorie', kategorieRoutes);
 
 // Otevírací doba
 let oteviracka = {};
+
+async function nacistOtevirackaZDB() {
+  try {
+    const result = await pool.query("SELECT hodnota FROM nastaveni WHERE klic = 'oteviracka'");
+    if (result.rows.length > 0) {
+      oteviracka = result.rows[0].hodnota;
+    }
+  } catch(e) {
+    console.log('Oteviracka z DB nenactena:', e.message);
+  }
+}
+nacistOtevirackaZDB();
+
 app.get('/api/nastaveni/oteviraci-doba', (req, res) => {
   res.json(oteviracka);
 });
-app.post('/api/nastaveni/oteviraci-doba', (req, res) => {
+
+app.post('/api/nastaveni/oteviraci-doba', async (req, res) => {
   oteviracka = req.body;
-  res.json({ ok: true });
-});
+  try {
+    await pool.query(
 let textyWebu = {
   procBarefoot: [
     { ikona: '👣', nadpis: 'Přirozený vývoj', text: 'Tenká podrážka umožňuje nožičkám vnímat terén a posilovat svaly tak, jak to příroda zamýšlela. Žádné zbytečné tuhé vložky.' },
