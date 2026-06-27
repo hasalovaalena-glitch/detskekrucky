@@ -43,26 +43,19 @@ app.post('/api/nastaveni/oteviraci-doba', (req, res) => {
   oteviracka = req.body;
   res.json({ ok: true });
 });
-// Texty webu
 let textyWebu = {
-  procNaboso: {
-    nadpis: 'Proč naboso?',
-    popis: 'Barefoot obuv podporuje přirozený vývoj dětské nožičky.',
-    duvody: [
-      'Přirozený pohyb',
-      'Zdravý vývoj',
-      'Silné svaly',
-      'Správné držení těla'
-    ]
-  }
+  procBarefoot: [
+    { ikona: '👣', nadpis: 'Přirozený vývoj', text: 'Tenká podrážka umožňuje nožičkám vnímat terén a posilovat svaly tak, jak to příroda zamýšlela. Žádné zbytečné tuhé vložky.' },
+    { ikona: '🌿', nadpis: 'Přírodní materiály', text: 'Používáme pouze certifikovanou kůži, bavlnu a přírodní gumy. Žádná škodlivá barviva, žádné plasty v kontaktu s pokožkou.' },
+    { ikona: '💨', nadpis: 'Dýchatelnost', text: 'Nožičky se v naší obuvi nepotí. Vzdušné materiály zajistí pohodu celý den – při hře venku i v mateřské škole.' }
+  ],
+  vyberteSi: [
+    { nadpis: 'Papučky', text: 'Lehké a vzdušné papučky pro první krůčky. Ideální do školky. Máme značky Beda,' },
+    { nadpis: 'Celoroční boty', text: 'Odolné a pohodlné boty pro aktivní dětský dobrodružný den venku i ve městě. Máme značky Froddo, Protetika,' },
+    { nadpis: 'Zimní botičky', text: '' },
+    { nadpis: 'Gumáky', text: '' }
+  ]
 };
-app.get('/api/nastaveni/texty', (req, res) => {
-  res.json(textyWebu);
-});
-app.post('/api/nastaveni/texty', (req, res) => {
-  textyWebu = req.body;
-  res.json({ ok: true });
-});
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
