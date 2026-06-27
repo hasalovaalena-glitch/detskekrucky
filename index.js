@@ -43,27 +43,13 @@ app.use('/api/kategorie', kategorieRoutes);
 
 // Otevírací doba
 let oteviracka = {};
-
-async function nacistOtevirackaZDB() {
-  try {
-    const result = await pool.query("SELECT hodnota FROM nastaveni WHERE klic = 'oteviracka'");
-    if (result.rows.length > 0) {
-      oteviracka = result.rows[0].hodnota;
-    }
-  } catch(e) {
-    console.log('Oteviracka z DB nenactena:', e.message);
-  }
-}
-nacistOtevirackaZDB();
-
 app.get('/api/nastaveni/oteviraci-doba', (req, res) => {
   res.json(oteviracka);
 });
-
-app.post('/api/nastaveni/oteviraci-doba', async (req, res) => {
+app.post('/api/nastaveni/oteviraci-doba', (req, res) => {
   oteviracka = req.body;
-  try {
-    await pool.query(
+  res.json({ ok: true });
+});
 let textyWebu = {
   procBarefoot: [
     { ikona: '👣', nadpis: 'Přirozený vývoj', text: 'Tenká podrážka umožňuje nožičkám vnímat terén a posilovat svaly tak, jak to příroda zamýšlela. Žádné zbytečné tuhé vložky.' },
@@ -78,49 +64,6 @@ let textyWebu = {
   ]
 };
 
-// Načtení textů z DB při startu
-async function nacistTextyZDB() {
-  try {
-    const result = await pool.query("SELECT hodnota FROM nastaveni WHERE klic = 'texty'");
-    if (result.rows.length > 0) {
-      textyWebu = result.rows[0].hodnota;
-    }
-  } catch(e) {
-    console.log('Texty z DB nenačteny:', e.message);
-  }
-}
-nacistTextyZDB();
-
-app.get('/api/nastaveni/texty', (req, res) => {
-  res.json(textyWebu);
-});
-
-app.post('/api/nastaveni/texty', async (req, res) => {
-  textyWebu = req.body;
-  try {
-    await pool.query(
-      "INSERT INTO nastaveni (klic, hodnota) VALUES ('texty', $1) ON CONFLICT (klic) DO UPDATE SET hodnota = $1",
-      [JSON.stringify(textyWebu)]
-    );
-    res.json({ ok: true });
-  } catch(e) {
-    res.status(500).json({ chyba: e.message });
-  }
-});
-app.post('/api/upload-obrazek', upload.single('obrazek'), async (req, res) => {
-  try {
-    const file = req.file;
-    const nazev = `produkt_${Date.now()}_${file.originalname}`;
-    const { data, error } = await supabase.storage
-      .from('produkty')
-      .upload(nazev, file.buffer, { contentType: file.mimetype, upsert: true });
-    if (error) return res.status(500).json({ chyba: error.message });
-    const url = `https://ipzkriwfcghlqfaqenaj.supabase.co/storage/v1/object/public/produkty/${nazev}`;
-    res.json({ url });
-  } catch(e) {
-    res.status(500).json({ chyba: e.message });
-  }
-});
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
