@@ -43,6 +43,26 @@ app.post('/api/nastaveni/oteviraci-doba', (req, res) => {
   oteviracka = req.body;
   res.json({ ok: true });
 });
+// Texty webu
+let textyWebu = {
+  procNaboso: {
+    nadpis: 'Proč naboso?',
+    popis: 'Barefoot obuv podporuje přirozený vývoj dětské nožičky.',
+    duvody: [
+      'Přirozený pohyb',
+      'Zdravý vývoj',
+      'Silné svaly',
+      'Správné držení těla'
+    ]
+  }
+};
+app.get('/api/nastaveni/texty', (req, res) => {
+  res.json(textyWebu);
+});
+app.post('/api/nastaveni/texty', (req, res) => {
+  textyWebu = req.body;
+  res.json({ ok: true });
+});
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
