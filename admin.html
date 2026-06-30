@@ -222,6 +222,7 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
       <div class="nav-label">Provoz</div>
       <div class="nav-item" onclick="showPage('objednavky',this)" id="navObjednavky"><span class="icon">📦</span> Objednávky <span class="nav-badge" id="navBadge" style="display:none">0</span></div>
       <div class="nav-item" onclick="showPage('zakaznici',this)"><span class="icon">👥</span> Zákazníci</div>
+      <div class="nav-item" onclick="showPage('rezervace',this)" id="navRezervace"><span class="icon">📅</span> Rezervace <span class="nav-badge" id="navBadgeRez" style="display:none">0</span></div>
     </div>
     <div class="nav-section">
       <div class="nav-label">Sklad</div>
@@ -472,16 +473,108 @@ select.stav-select{padding:4px 8px;border:1px solid var(--tan);border-radius:6px
       </div>
     </div>
 
+    <!-- REZERVACE -->
+    <div class="page" id="page-rezervace">
+      <div class="page-header">
+        <div class="page-title">📅 Rezervace</div>
+        <div class="table-actions">
+          <button class="btn btn-primary" onclick="openModal('modalNovySlot')">+ Přidat termín</button>
+          <button class="refresh-btn" onclick="loadRezervace()">↻ Obnovit</button>
+        </div>
+      </div>
+      <div id="rezervaceMsg"></div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+        <div class="stat-card"><div class="stat-label">Celkem rezervací</div><div class="stat-value" id="rezStatCelkem">—</div></div>
+        <div class="stat-card"><div class="stat-label">Čekajících</div><div class="stat-value stat-orange" id="rezStatCekajici">—</div></div>
+        <div class="stat-card"><div class="stat-label">Volných termínů</div><div class="stat-value stat-green" id="rezStatVolne">—</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+        <!-- Termíny -->
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>🕐 Termíny</h3>
+            <div class="table-actions">
+              <div class="filter-pills" style="margin:0">
+                <span class="pill active" onclick="filtrovatSloty('vse',this)">Vše</span>
+                <span class="pill" onclick="filtrovatSloty('volne',this)">Volné</span>
+                <span class="pill" onclick="filtrovatSloty('obsazene',this)">Obsazené</span>
+              </div>
+            </div>
+          </div>
+          <div id="slotTable"><div class="loading">Načítám...</div></div>
+        </div>
+
+        <!-- Rychlé přidání termínů -->
+        <div class="table-wrap">
+          <div class="table-header"><h3>⚡ Rychlé přidání termínů</h3></div>
+          <div style="padding:16px">
+            <div class="form-group">
+              <label>Datum</label>
+              <input type="date" id="qDatum" style="padding:9px 12px;border:2px solid var(--tan-light);border-radius:10px;font-family:'Lato',sans-serif;font-size:0.88rem;outline:none;width:100%">
+            </div>
+            <div style="font-size:0.78rem;font-weight:700;color:var(--text-light);margin-bottom:8px">Klikni na časy které chceš přidat:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+              <button class="pill" onclick="quickAddSlot('09:00','09:30')">9:00–9:30</button>
+              <button class="pill" onclick="quickAddSlot('09:30','10:00')">9:30–10:00</button>
+              <button class="pill" onclick="quickAddSlot('10:00','10:30')">10:00–10:30</button>
+              <button class="pill" onclick="quickAddSlot('10:30','11:00')">10:30–11:00</button>
+              <button class="pill" onclick="quickAddSlot('11:00','11:30')">11:00–11:30</button>
+              <button class="pill" onclick="quickAddSlot('13:00','13:30')">13:00–13:30</button>
+              <button class="pill" onclick="quickAddSlot('13:30','14:00')">13:30–14:00</button>
+              <button class="pill" onclick="quickAddSlot('14:00','14:30')">14:00–14:30</button>
+              <button class="pill" onclick="quickAddSlot('14:30','15:00')">14:30–15:00</button>
+              <button class="pill" onclick="quickAddSlot('15:00','15:30')">15:00–15:30</button>
+              <button class="pill" onclick="quickAddSlot('15:30','16:00')">15:30–16:00</button>
+              <button class="pill" onclick="quickAddSlot('16:00','16:30')">16:00–16:30</button>
+            </div>
+            <div id="quickSlotsMsg"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rezervace tabulka -->
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>📋 Příchozí rezervace</h3>
+          <div class="table-actions">
+            <div class="filter-pills" style="margin:0">
+              <span class="pill active" onclick="filtrovatRez('vse',this)">Vše</span>
+              <span class="pill" onclick="filtrovatRez('cekajici',this)">⏳ Čekající</span>
+              <span class="pill" onclick="filtrovatRez('potvrzena',this)">✅ Potvrzené</span>
+              <span class="pill" onclick="filtrovatRez('zrusena',this)">❌ Zrušené</span>
+            </div>
+          </div>
+        </div>
+        <div id="rezervaceTable"><div class="loading">Načítám...</div></div>
+      </div>
+    </div>
+
+  
+
+
+
+<!-- MODAL NOVÝ TERMÍN -->
+<div class="modal-overlay" id="modalNovySlot">
+  <div class="modal" style="max-width:420px">
+    <h3>📅 Nový termín</h3>
+    <div id="novySlotMsg"></div>
+    <div class="form-group"><label>Datum *</label><input type="date" id="nssDatum"></div>
+    <div class="form-grid-2">
+      <div class="form-group"><label>Čas od *</label><input type="time" id="nssOd"></div>
+      <div class="form-group"><label>Čas do *</label><input type="time" id="nssDo"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalNovySlot')">Zrušit</button>
+      <button class="btn btn-primary" onclick="ulozitSlot()">💾 Uložit</button>
+    </div>
   </div>
 </div>
-});
-
-  </div>
-</div>
-
-
 
 <!-- MODAL PRODEJ V PRODEJNĚ -->
+
 <div class="modal-overlay" id="modalProdejnaProdat">
   <div class="modal" style="max-width:720px;width:100%">
     <h3>🏪 Nový prodej v prodejně</h3>
@@ -671,6 +764,7 @@ function showPage(name, el) {
   if (name==='prodejna') { loadProdejna(); nacistSkladProProdejna(); }
   if (name==='nastaveni') loadNastaveni();
   if (name==='texty') loadTexty();
+  if (name==='rezervace') loadRezervace();
   // Close mobile sidebar
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -1471,6 +1565,162 @@ async function smazatKategorii(id, nazev) {
     loadKategorie();
   } catch(e) { alert('Chyba'); }
 }
+
+// ═══════════════════════════════════════════
+// REZERVACE
+// ═══════════════════════════════════════════
+let vsechnySloty = [], vsechnyRezervace = [];
+
+async function loadRezervace() {
+  try {
+    const [sloty, rez] = await Promise.all([
+      fetch(API+'/rezervace/sloty').then(r=>r.json()),
+      fetch(API+'/rezervace').then(r=>r.json())
+    ]);
+    vsechnySloty = Array.isArray(sloty) ? sloty : [];
+    vsechnyRezervace = Array.isArray(rez) ? rez : [];
+    renderSloty(vsechnySloty);
+    renderRezervace(vsechnyRezervace);
+    updateRezStats();
+    // badge čekajících v sidebaru
+    const cekajici = vsechnyRezervace.filter(r=>r.stav==='cekajici').length;
+    const badge = document.getElementById('navBadgeRez');
+    if (cekajici > 0) { badge.textContent = cekajici; badge.style.display='inline'; }
+    else { badge.style.display='none'; }
+  } catch(e) {
+    document.getElementById('rezervaceTable').innerHTML = '<div class="error-msg">Chyba načítání rezervací</div>';
+  }
+}
+
+function updateRezStats() {
+  document.getElementById('rezStatCelkem').textContent = vsechnyRezervace.length;
+  document.getElementById('rezStatCekajici').textContent = vsechnyRezervace.filter(r=>r.stav==='cekajici').length;
+  document.getElementById('rezStatVolne').textContent = vsechnySloty.filter(s=>!s.obsazeno).length;
+}
+
+let slotyFilter = 'vse';
+function filtrovatSloty(f, btn) {
+  slotyFilter = f;
+  document.querySelectorAll('#page-rezervace .filter-pills:first-of-type .pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = f==='vse' ? vsechnySloty : f==='volne' ? vsechnySloty.filter(s=>!s.obsazeno) : vsechnySloty.filter(s=>s.obsazeno);
+  renderSloty(filtered);
+}
+
+function renderSloty(data) {
+  const el = document.getElementById('slotTable');
+  if (!data.length) { el.innerHTML='<div class="empty">Žádné termíny</div>'; return; }
+  const sorted = [...data].sort((a,b)=>(a.datum+a.cas_od).localeCompare(b.datum+b.cas_od));
+  el.innerHTML = `<table><thead><tr><th>Datum</th><th>Čas</th><th>Stav</th><th>Akce</th></tr></thead><tbody>
+    ${sorted.map(s=>`<tr>
+      <td><strong>${formatDatum(s.datum)}</strong></td>
+      <td>${s.cas_od.slice(0,5)}–${s.cas_do.slice(0,5)}</td>
+      <td>${s.obsazeno ? '<span class="badge badge-zruseno">Obsazeno</span>' : '<span class="badge badge-ok">Volno</span>'}</td>
+      <td>${!s.obsazeno ? `<button class="btn btn-red btn-sm" onclick="smazatSlot(${s.id})">🗑️</button>` : ''}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+let rezFilter = 'vse';
+function filtrovatRez(f, btn) {
+  rezFilter = f;
+  document.querySelectorAll('#page-rezervace .filter-pills').forEach(fp => {
+    // pouze pills uvnitř příchozích rezervací
+  });
+  btn.closest('.filter-pills').querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = f==='vse' ? vsechnyRezervace : vsechnyRezervace.filter(r=>r.stav===f);
+  renderRezervace(filtered);
+}
+
+function renderRezervace(data) {
+  const el = document.getElementById('rezervaceTable');
+  if (!data.length) { el.innerHTML='<div class="empty">Žádné rezervace</div>'; return; }
+  const sorted = [...data].sort((a,b)=> new Date(a.created_at) - new Date(b.created_at)).reverse();
+  el.innerHTML = `<table><thead><tr>
+    <th>Zákazník</th><th>Termín</th><th>Dítě</th><th>Poznámka</th><th>Stav</th><th>Akce</th>
+  </tr></thead><tbody>
+    ${sorted.map(r => {
+      const slot = vsechnySloty.find(s=>s.id===r.slot_id);
+      const casInfo = slot ? `${formatDatum(slot.datum)} ${slot.cas_od.slice(0,5)}` : '—';
+      const stavBadgeRez = {cekajici:'badge-vyrizuje', potvrzena:'badge-doruceno', zrusena:'badge-zruseno'}[r.stav]||'badge-nova';
+      const stavLabel = {cekajici:'⏳ Čekající', potvrzena:'✅ Potvrzena', zrusena:'❌ Zrušena'}[r.stav]||r.stav;
+      return `<tr>
+        <td><strong>${escH(r.jmeno)}</strong><br><small style="color:var(--text-light)">📞 ${escH(r.telefon)}<br>✉️ ${escH(r.email)}</small></td>
+        <td style="font-size:0.82rem"><strong>${casInfo}</strong></td>
+        <td style="font-size:0.82rem">${r.vek_dite ? escH(r.vek_dite) : '—'}</td>
+        <td style="font-size:0.82rem;max-width:180px">${r.poznamka ? escH(r.poznamka) : '—'}</td>
+        <td><span class="badge ${stavBadgeRez}">${stavLabel}</span></td>
+        <td style="display:flex;gap:4px;flex-wrap:wrap">
+          ${r.stav==='cekajici' ? `<button class="btn btn-green btn-sm" onclick="setStavRez(${r.id},'potvrzena')">✓ Potvrdit</button>` : ''}
+          ${r.stav!=='zrusena' ? `<button class="btn btn-red btn-sm" onclick="setStavRez(${r.id},'zrusena')">✕ Zrušit</button>` : ''}
+        </td>
+      </tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+
+async function setStavRez(id, stav) {
+  try {
+    await fetch(API+'/rezervace/'+id+'/stav', {
+      method:'PATCH', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({stav})
+    });
+    loadRezervace();
+  } catch(e) { alert('Chyba'); }
+}
+
+async function ulozitSlot() {
+  const datum = document.getElementById('nssDatum').value;
+  const od = document.getElementById('nssOd').value;
+  const doo = document.getElementById('nssDo').value;
+  if (!datum||!od||!doo) { document.getElementById('novySlotMsg').innerHTML='<div class="error-msg">Vyplňte všechna pole.</div>'; return; }
+  if (od>=doo) { document.getElementById('novySlotMsg').innerHTML='<div class="error-msg">Čas „do" musí být po čase „od".</div>'; return; }
+  try {
+    const res = await fetch(API+'/rezervace/sloty', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({datum, cas_od:od, cas_do:doo})
+    });
+    if (res.ok) {
+      closeModal('modalNovySlot');
+      loadRezervace();
+    } else {
+      const err = await res.json();
+      document.getElementById('novySlotMsg').innerHTML=`<div class="error-msg">${err.chyba||'Chyba'}</div>`;
+    }
+  } catch(e) { document.getElementById('novySlotMsg').innerHTML='<div class="error-msg">Chyba spojení</div>'; }
+}
+
+async function quickAddSlot(od, doo) {
+  const datum = document.getElementById('qDatum').value;
+  if (!datum) { document.getElementById('quickSlotsMsg').innerHTML='<div class="error-msg">Nejprve vyberte datum.</div>'; return; }
+  try {
+    const res = await fetch(API+'/rezervace/sloty', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({datum, cas_od:od, cas_do:doo})
+    });
+    if (res.ok) {
+      document.getElementById('quickSlotsMsg').innerHTML=`<div class="success-msg">✅ Přidán termín ${od}–${doo}</div>`;
+      setTimeout(()=>document.getElementById('quickSlotsMsg').innerHTML='', 2000);
+      loadRezervace();
+    }
+  } catch(e) { document.getElementById('quickSlotsMsg').innerHTML='<div class="error-msg">Chyba</div>'; }
+}
+
+async function smazatSlot(id) {
+  if (!confirm('Smazat tento termín?')) return;
+  try {
+    await fetch(API+'/rezervace/sloty/'+id, {method:'DELETE'});
+    loadRezervace();
+  } catch(e) { alert('Chyba'); }
+}
+
+function formatDatum(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}. ${m}. ${y}`;
+}
+function escH(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }

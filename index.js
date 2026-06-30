@@ -97,6 +97,122 @@ app.post('/api/nastaveni/oteviraci-doba', async (req, res) => {
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log('Server bezi na http://127.0.0.1:3000');
 });
+
+// ═══════════════════════════════════════════
+// REZERVACE
+// ═══════════════════════════════════════════
+
+// Inicializace tabulek (spustí se při startu serveru)
+async function initRezervaceTabulky() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS rezervace_sloty (
+        id SERIAL PRIMARY KEY,
+        datum DATE NOT NULL,
+        cas_od TIME NOT NULL,
+        cas_do TIME NOT NULL,
+        obsazeno BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS rezervace (
+        id SERIAL PRIMARY KEY,
+        slot_id INTEGER REFERENCES rezervace_sloty(id) ON DELETE CASCADE,
+        jmeno TEXT NOT NULL,
+        telefon TEXT NOT NULL,
+        email TEXT NOT NULL,
+        vek_dite TEXT,
+        poznamka TEXT,
+        stav TEXT DEFAULT 'cekajici',
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+    `);
+    console.log('Rezervace tabulky OK');
+  } catch(e) {
+    console.log('Rezervace tabulky chyba:', e.message);
+  }
+}
+initRezervaceTabulky();
+
+// GET /api/rezervace/sloty – všechny sloty (pro admin i frontend)
+app.get('/api/rezervace/sloty', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM rezervace_sloty ORDER BY datum, cas_od');
+    res.json(result.rows);
+  } catch(e) { res.status(500).json({ chyba: e.message }); }
+});
+
+// POST /api/rezervace/sloty – přidat slot (admin)
+app.post('/api/rezervace/sloty', async (req, res) => {
+  const { datum, cas_od, cas_do } = req.body;
+  if (!datum || !cas_od || !cas_do) return res.status(400).json({ chyba: 'Chybí datum nebo časy' });
+  try {
+    const result = await pool.query(
+      'INSERT INTO rezervace_sloty (datum, cas_od, cas_do) VALUES ($1, $2, $3) RETURNING *',
+      [datum, cas_od, cas_do]
+    );
+    res.json(result.rows[0]);
+  } catch(e) { res.status(500).json({ chyba: e.message }); }
+});
+
+// DELETE /api/rezervace/sloty/:id – smazat slot (admin)
+app.delete('/api/rezervace/sloty/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM rezervace_sloty WHERE id=$1 AND obsazeno=FALSE', [req.params.id]);
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ chyba: e.message }); }
+});
+
+// GET /api/rezervace – všechny rezervace (admin)
+app.get('/api/rezervace', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM rezervace ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch(e) { res.status(500).json({ chyba: e.message }); }
+});
+
+// POST /api/rezervace – zákazník vytvoří rezervaci
+app.post('/api/rezervace', async (req, res) => {
+  const { slot_id, jmeno, telefon, email, vek_dite, poznamka } = req.body;
+  if (!slot_id || !jmeno || !telefon || !email) return res.status(400).json({ chyba: 'Chybí povinná pole' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    // Zkontroluj že slot je volný
+    const slot = await client.query('SELECT * FROM rezervace_sloty WHERE id=$1 FOR UPDATE', [slot_id]);
+    if (!slot.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ chyba: 'Termín neexistuje' }); }
+    if (slot.rows[0].obsazeno) { await client.query('ROLLBACK'); return res.status(409).json({ chyba: 'Termín je již obsazen' }); }
+    // Vytvoř rezervaci
+    const rez = await client.query(
+      'INSERT INTO rezervace (slot_id, jmeno, telefon, email, vek_dite, poznamka) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
+      [slot_id, jmeno, telefon, email, vek_dite||null, poznamka||null]
+    );
+    // Označ slot jako obsazený
+    await client.query('UPDATE rezervace_sloty SET obsazeno=TRUE WHERE id=$1', [slot_id]);
+    await client.query('COMMIT');
+    res.json(rez.rows[0]);
+  } catch(e) { await client.query('ROLLBACK'); res.status(500).json({ chyba: e.message }); }
+  finally { client.release(); }
+});
+
+// PATCH /api/rezervace/:id/stav – změnit stav (admin)
+app.patch('/api/rezervace/:id/stav', async (req, res) => {
+  const { stav } = req.body;
+  if (!['cekajici','potvrzena','zrusena'].includes(stav)) return res.status(400).json({ chyba: 'Neplatný stav' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const rez = await client.query('SELECT * FROM rezervace WHERE id=$1', [req.params.id]);
+    if (!rez.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ chyba: 'Rezervace nenalezena' }); }
+    await client.query('UPDATE rezervace SET stav=$1 WHERE id=$2', [stav, req.params.id]);
+    // Pokud zrušíme, uvolníme slot
+    if (stav === 'zrusena') {
+      await client.query('UPDATE rezervace_sloty SET obsazeno=FALSE WHERE id=$1', [rez.rows[0].slot_id]);
+    }
+    await client.query('COMMIT');
+    res.json({ ok: true });
+  } catch(e) { await client.query('ROLLBACK'); res.status(500).json({ chyba: e.message }); }
+  finally { client.release(); }
+});
 // Banner
 let banner = {};
 app.get('/api/nastaveni/banner', (req, res) => {
