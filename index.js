@@ -41,15 +41,7 @@ app.use('/api/platby', platbyRoutes);
 app.use('/api/produkty', skladRoutes);
 app.use('/api/kategorie', kategorieRoutes);
 
-// Otevírací doba
-let oteviracka = {};
-app.get('/api/nastaveni/oteviraci-doba', (req, res) => {
-  res.json(oteviracka);
-});
-app.post('/api/nastaveni/oteviraci-doba', (req, res) => {
-  oteviracka = req.body;
-  res.json({ ok: true });
-});
+// Texty webu (výchozí hodnoty, přepíšou se z DB)
 let textyWebu = {
   procBarefoot: [
     { ikona: '👣', nadpis: 'Přirozený vývoj', text: 'Tenká podrážka umožňuje nožičkám vnímat terén a posilovat svaly tak, jak to příroda zamýšlela. Žádné zbytečné tuhé vložky.' },
@@ -63,6 +55,7 @@ let textyWebu = {
     { nadpis: 'Gumáky', text: '' }
   ]
 };
+
 // Otevírací doba
 let oteviracka = {};
 
@@ -94,8 +87,35 @@ app.post('/api/nastaveni/oteviraci-doba', async (req, res) => {
     res.status(500).json({ chyba: e.message });
   }
 });
-app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
-  console.log('Server bezi na http://127.0.0.1:3000');
+
+// Texty webu
+async function nacistTextyZDB() {
+  try {
+    const result = await pool.query("SELECT hodnota FROM nastaveni WHERE klic = 'texty'");
+    if (result.rows.length > 0) {
+      textyWebu = result.rows[0].hodnota;
+    }
+  } catch(e) {
+    console.log('Texty z DB nenacteny:', e.message);
+  }
+}
+nacistTextyZDB();
+
+app.get('/api/nastaveni/texty', (req, res) => {
+  res.json(textyWebu);
+});
+
+app.post('/api/nastaveni/texty', async (req, res) => {
+  textyWebu = req.body;
+  try {
+    await pool.query(
+      "INSERT INTO nastaveni (klic, hodnota) VALUES ('texty', $1) ON CONFLICT (klic) DO UPDATE SET hodnota = $1",
+      [JSON.stringify(textyWebu)]
+    );
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ chyba: e.message });
+  }
 });
 
 // ═══════════════════════════════════════════
@@ -221,4 +241,8 @@ app.get('/api/nastaveni/banner', (req, res) => {
 app.post('/api/nastaveni/banner', (req, res) => {
   banner = req.body;
   res.json({ ok: true });
+});
+
+app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
+  console.log('Server bezi na http://127.0.0.1:3000');
 });
