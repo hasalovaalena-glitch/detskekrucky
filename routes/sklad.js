@@ -119,14 +119,6 @@ router.patch('/produkty/:id', async (req, res) => {
     res.status(500).json({ chyba: err.message });
   }
 });
-      'UPDATE produkty SET nazev=$1, znacka=$2, cena=$3, cena_puvodni=$4 WHERE id=$5 RETURNING *',
-      [nazev, znacka, cena, cena_puvodni||null, req.params.id]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ chyba: err.message });
-  }
-});
 
 // Získat všechny kategorie
 router.get('/kategorie', async (req, res) => {
