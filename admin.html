@@ -1578,6 +1578,7 @@ async function loadRezervace() {
       fetch(API+'/rezervace').then(r=>r.json())
     ]);
     vsechnySloty = Array.isArray(sloty) ? sloty : [];
+    vsechnySloty.forEach(s => { s.datum = String(s.datum).slice(0, 10); });
     vsechnyRezervace = Array.isArray(rez) ? rez : [];
     renderSloty(vsechnySloty);
     renderRezervace(vsechnyRezervace);
